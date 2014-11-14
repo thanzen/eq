@@ -16,11 +16,12 @@ func CreateUserService(dbcontext *services.DbContext) UserService {
 }
 
 func (serv *UserService) GetById(id int) *user.User {
-	result, err := serv.Gorp.Get(user.User{}, id)
-	if err != nil {
-		return nil
-	}
-	return result.(*user.User)
+	return &user.User{}
+	//result, err := serv.Gorp.Get(user.User{}, id)
+	//if err != nil {
+	//	return nil
+	//}
+	//return result.(*user.User)
 }
 
 func (serv *UserService) Insert(model user.User) *user.User {
