@@ -33,3 +33,16 @@ func (serv *UserService) Insert(model user.User) *user.User {
 	}
 	return &model
 }
+
+func (serv *UserService) Get() []user.User {
+	// Run your query
+	query := "select * from user_meta"
+
+	// pass a slice to Select()
+	var list []user.User
+	_, err := serv.Gorp.Select(&list, query)
+	if err != nil {
+		panic("list error")
+	}
+	return list
+}

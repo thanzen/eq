@@ -14,6 +14,7 @@ type UserController struct {
 
 func (ct *UserController) Register(engine *gin.Engine, group ...*gin.RouterGroup) {
 	engine.GET("user/:id", ct.get)
+	engine.GET("users", ct.getall)
 }
 func (ct UserController) get(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("id"))
@@ -24,5 +25,12 @@ func (ct UserController) get(c *gin.Context) {
 		user := ct.UserService.GetById(id)
 		c.JSON(200, user)
 	}
+
+}
+func (ct UserController) getall(c *gin.Context) {
+
+	users := ct.UserService.Get()
+
+	c.JSON(200, users)
 
 }

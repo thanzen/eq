@@ -14,4 +14,5 @@ CREATE TABLE user_meta
   office_phone text,
   fax text,
   CONSTRAINT user_meta_pkey PRIMARY KEY (id)
-)
+);
+ CREATE INDEX index_user_meta_on_id_type ON user_meta USING btree (id);
