@@ -18,9 +18,11 @@ func (ct *UserController) Register(engine *gin.Engine, group ...*gin.RouterGroup
 func (ct UserController) get(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("id"))
 	if err != nil {
-		panic("Not a valid user id!")
+		c.Error(err, "Invalid id")
+		c.Abort(500)
+	} else {
+		user := ct.UserService.GetById(id)
+		c.JSON(200, user)
 	}
-	user := ct.UserService.GetById(id)
-	c.JSON(200, user)
 
 }
