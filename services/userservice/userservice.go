@@ -34,8 +34,8 @@ func (serv *UserService) Insert(model user.User) *user.User {
 	return &model
 }
 
-func (serv *UserService) Get() []user.User {
-	// Run your query
+func (serv *UserService) GetList(options services.SearchOptions) []user.User {
+
 	query := "select * from user_meta"
 
 	// pass a slice to Select()
