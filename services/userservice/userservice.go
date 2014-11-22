@@ -42,7 +42,7 @@ func (serv *UserService) GetList(options services.SearchOptions) []user.User {
 	var list []user.User
 	_, err := serv.Gorp.Select(&list, query)
 	if err != nil {
-		panic("list error")
+		panic(err)
 	}
 	return list
 }
