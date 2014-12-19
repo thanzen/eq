@@ -19,15 +19,16 @@ func (serv *UserService) GetById(id int) *user.User {
 	if id <= 0 {
 		return nil
 	}
-	result, err := serv.Gorp.Get(user.User{}, id)
+	var u *user.User
+	err := serv.Modl.Get(u, id)
 	if err != nil {
 		return nil
 	}
-	return result.(*user.User)
+	return u
 }
 
 func (serv *UserService) Insert(model user.User) *user.User {
-	err := serv.Gorp.Insert(model)
+	err := serv.Modl.Insert(model)
 	if err != nil {
 		return nil
 	}
@@ -40,7 +41,7 @@ func (serv *UserService) GetList(options services.SearchOptions) []user.User {
 
 	// pass a slice to Select()
 	var list []user.User
-	_, err := serv.Gorp.Select(&list, query)
+	err := serv.Modl.Select(&list, query)
 	if err != nil {
 		panic(err)
 	}

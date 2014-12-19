@@ -3,14 +3,14 @@ package services
 import (
 	"fmt"
 
-	"github.com/coopernurse/gorp"
+	"github.com/jmoiron/modl"
 )
 
 type SearchOptions map[string]interface{}
 
 //Database related context
 type DbContext struct {
-	Gorp *gorp.DbMap
+	Modl *modl.DbMap
 }
 
 func (dbcontext *DbContext) GenerateWhere(options SearchOptions) string {

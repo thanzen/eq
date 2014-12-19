@@ -4,15 +4,15 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/coopernurse/gorp"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/modl"
 	_ "github.com/lib/pq"
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/singleton"
 )
 
-func initDb() *gorp.DbMap {
+func initDb() *modl.DbMap {
 	// connect to db using standard Go database/sql API
 	// use whatever database/sql driver you wish
 
@@ -24,7 +24,7 @@ func initDb() *gorp.DbMap {
 	checkErr(err, "sql.Open failed")
 
 	// construct a gorp DbMap
-	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
+	dbmap := &modl.DbMap{Db: db, Dialect: modl.PostgresDialect{}}
 
 	// add a table, setting the table name to 'user_meta' and
 	// specifying that the Id property is an auto incrementing PK
