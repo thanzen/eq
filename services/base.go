@@ -3,7 +3,6 @@ package services
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/thanzen/modl"
 	"reflect"
 )
@@ -20,14 +19,15 @@ type DbContext struct {
 //If the service needs more logic or functionality, it can
 //composit this interface with its custom functions.
 type Repositoryer interface {
-	Get(id int) interface{}
-	Save(model interface{}) error
-	GetList(options SearchOptions) []interface{}
-	Delete(id int) error
+	Get(dest interface{}, keys ...interface{}) error
+	Save(dest interface{}) error
+	Inert(dest interface{}) error
+	Update(dest interface{}) error
+	GetList(dest interface{}, options SearchOptions) []interface{}
+	Delete(dest interface) error
 }
 
 //DefaultRepository provides basic implementation of Repositoryer
-//It assumes that the model must have Id as its primary key
 type DefaultRepository struct {
 	Modl      *modl.DbMap
 	selectAll string
@@ -43,22 +43,32 @@ func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error 
 	return err
 }
 
-//Save provides Insert and Update for user.User.
-//When u(user) is nil, it performs insert, otherwise, it performs update.
-//Todo: added error log
+//Save provides Insert and Update for given type instance.
+//When the id for give type instance(dest) is nil, it performs insert, otherwise, it performs update.
+//Therefore, it assumes that the given type contain Id column as its primary key in the database
+//Due to the reason above, when the given dest contains other primary keys than Id, please do not call this function,
+//since it may cuase unexpected result
 func (repo *DefaultRepository) Save(dest interface{}) error {
-	if dest == nil {
-		return errors.New("Keys can not be empty")
-	}
-	var err error
 	v := reflect.ValueOf(dest)
-	//reflect all the keys and remove the id limitation
 	if v.FieldByName("Id").Interface().(int) <= 0 {
-		err = repo.Modl.Insert(dest)
+		return repo.Insert(dest)
 	} else {
-		_, err = repo.Modl.Update(dest)
+		return repo.Update(dest)
 	}
+}
+func (repo *DefaultRepository) Insert(dest interface{}) error {
+	if dest == nil {
+		return errors.New("Insert error : object can not be empty")
+	}
+	return repo.Modl.Insert(dest)
+}
+func (repo *DefaultRepository) Update(dest interface{}) error {
+	if dest == nil {
+		return errors.New("Update error :object can not be empty")
+	}
+	_, err := repo.Modl.Update(dest)
 	return err
+
 }
 
 func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions) error {
@@ -67,6 +77,14 @@ func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions) 
 		return errors.New("Generate sql error")
 	}
 	err := repo.Modl.Select(dest, sql)
+	return err
+}
+
+func (repo *DefaultRepository) Delete(dest interface{}) error {
+	if dest == nil {
+		return errors.New("Delete error : object can not be empty")
+	}
+	_, err := repo.Modl.Delete(dest)
 	return err
 }
 
