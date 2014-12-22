@@ -1,9 +1,9 @@
 package userservice
 
 import (
-	"github.com/thanzen/eq/services"
-
+	//"errors"
 	"github.com/thanzen/eq/models/user"
+	"github.com/thanzen/eq/services"
 )
 
 type UserService struct {
@@ -27,21 +27,34 @@ func (serv *UserService) GetById(id int) *user.User {
 	return u
 }
 
-func (serv *UserService) Insert(model user.User) *user.User {
-	err := serv.Modl.Insert(model)
+//Save provides Insert and Update for user.User.
+//When u(user) is nil, it performs insert, otherwise, it performs update.
+//Todo: added error log
+func (serv *UserService) Save(u *user.User) *user.User {
+	if u == nil {
+		return nil
+	}
+	var err error
+	if u.Id <= 0 {
+		err = serv.Modl.Insert(u)
+	} else {
+		_, err = serv.Modl.Update(u)
+	}
 	if err != nil {
 		return nil
 	}
-	return &model
+	return u
 }
 
-func (serv *UserService) GetList(options services.SearchOptions) []user.User {
+func (serv *UserService) GetList() []*user.User {
 
-	query := "select * from user_meta"
+	//query := "select * from user_meta"
 
 	// pass a slice to Select()
-	var list []user.User
-	err := serv.Modl.Select(&list, query)
+	list := []*user.User{}
+	dfservice := &services.DefaultRepository{Modl: serv.DbContext.Modl}
+	err := dfservice.GetList(&list, nil)
+	//err := serv.Modl.Select(&list, query)
 	if err != nil {
 		panic(err)
 	}

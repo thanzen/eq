@@ -20,7 +20,7 @@ type User struct {
 	LastLoginDate    time.Time `json:"lastLoginDate" db:"last_login_date"`
 	LastActivityDate time.Time `json:"lastActivityDate" db:"last_activity_date"`
 	CellPhone        string    `json:"cellPhone" db:"cell_phone"`
-	Officephone      string    `json:"officePhone" db:"office_Phone"`
+	Officephone      string    `json:"officePhone" db:"office_phone"`
 	Fax              string    `json:"fax" db:"fax"`
 	Country          string    `json:"country" db:"country"`
 	City             string    `json:"city" db:"city"`

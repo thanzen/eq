@@ -30,7 +30,7 @@ func (ct UserController) get(c *gin.Context) {
 func (ct UserController) getall(c *gin.Context) {
 
 	//todo:add conditon list
-	users := ct.UserService.GetList(nil)
+	users := ct.UserService.GetList()
 
 	c.JSON(200, users)
 

@@ -1,30 +1,34 @@
 package main
 
 import (
-	"database/sql"
-	"log"
-
+	//"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/modl"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/singleton"
+	"github.com/thanzen/modl"
+	"log"
 )
 
 func initDb() *modl.DbMap {
 	// connect to db using standard Go database/sql API
 	// use whatever database/sql driver you wish
 
-	db, err := sql.Open("postgres", "user=postgres password=root dbname=linkedtec sslmode=disable")
+	db, err := sqlx.Connect("postgres", "user=postgres password=root dbname=testdb sslmode=disable")
+	//db, err = sqlx.Connect("sqlite3", path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	checkErr(err, "sql.Open failed")
 
+	dbmap := modl.NewDbMap(db.DB, modl.PostgresDialect{})
+	fmt.Println("connected!")
 	// construct a gorp DbMap
-	dbmap := &modl.DbMap{Db: db, Dialect: modl.PostgresDialect{}}
+	//dbmap := &modl.DbMap{Db: db.DB, Dialect: modl.PostgresDialect{}}
 
 	// add a table, setting the table name to 'user_meta' and
 	// specifying that the Id property is an auto incrementing PK
@@ -50,7 +54,7 @@ func main() {
 
 	//router.Use(web.InjectGorp(dbmap))
 	root := router.Group("/v1")
-	gin.SetMode(gin.TestMode)
+	//gin.SetMode(gin.TestMode)
 	router.LoadHTMLTemplates("templates/*")
 	router.GET("/index", func(c *gin.Context) {
 		obj := gin.H{"title": "Main website"}
