@@ -24,7 +24,7 @@ type Repositoryer interface {
 	Inert(dest interface{}) error
 	Update(dest interface{}) error
 	GetList(dest interface{}, options SearchOptions) []interface{}
-	Delete(dest interface) error
+	Delete(dest interface{}) error
 }
 
 //DefaultRepository provides basic implementation of Repositoryer
@@ -46,8 +46,8 @@ func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error 
 //Save provides Insert and Update for given type instance.
 //When the id for give type instance(dest) is nil, it performs insert, otherwise, it performs update.
 //Therefore, it assumes that the given type contain Id column as its primary key in the database
-//Due to the reason above, when the given dest contains other primary keys than Id, please do not call this function,
-//since it may cuase unexpected result
+//Shen the given dest contains other primary keys than Id, please do not call this function for inserting
+//,since it may cuase unexpected result
 func (repo *DefaultRepository) Save(dest interface{}) error {
 	v := reflect.ValueOf(dest)
 	if v.FieldByName("Id").Interface().(int) <= 0 {
