@@ -1,18 +1,17 @@
 package services
 
+//todo: add skip funcationality for retriving list
+//todo: add count functionality for retriving list
 import (
 	"bytes"
 	"errors"
+	"github.com/thanzen/eq/util"
 	"github.com/thanzen/modl"
 	"reflect"
+	"strconv"
 )
 
 type SearchOptions map[string]interface{}
-
-//Database related context
-type DbContext struct {
-	Modl *modl.DbMap
-}
 
 //Repositoryer represent interface for repository
 //Repositoryer should be good enough for most basic CRUD
@@ -21,9 +20,9 @@ type DbContext struct {
 type Repositoryer interface {
 	Get(dest interface{}, keys ...interface{}) error
 	Save(dest interface{}) error
-	Inert(dest interface{}) error
+	Insert(dest interface{}) error
 	Update(dest interface{}) error
-	GetList(dest interface{}, options SearchOptions) []interface{}
+	GetList(dest interface{}, options SearchOptions, pos ...int) error
 	Delete(dest interface{}) error
 }
 
@@ -71,12 +70,19 @@ func (repo *DefaultRepository) Update(dest interface{}) error {
 
 }
 
-func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions) error {
-	sql := repo.GenerateSelectSql(dest, options)
+func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions, pos ...int) error {
+	sql := repo.GenerateSelectSql(dest, options, pos...)
 	if sql == "" {
 		return errors.New("Generate sql error")
 	}
-	err := repo.Modl.Select(dest, sql)
+	var err error
+	if len(options) > 0 {
+		vals := util.GetMapValues(options)
+		err = repo.Modl.Select(dest, sql, vals...)
+	} else {
+		err = repo.Modl.Select(dest, sql)
+	}
+
 	return err
 }
 
@@ -92,16 +98,22 @@ func (repo *DefaultRepository) Delete(dest interface{}) error {
 //note: in order to avoid sql injection, GenerateSelectSql function skip to
 //fill the search option values in, instead, use ? as parameters so that
 //necessary validation will be performed  by database/sql package.
-func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options SearchOptions) string {
+func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options SearchOptions, pos ...int) string {
 	table := repo.Modl.TableFor(dest)
 	if table == nil || len(table.Columns) < 1 {
 		return ""
 	}
 	sql := repo.getSelectAll(table)
+	if sql == "" {
+		return sql
+	}
 	s := bytes.Buffer{}
-	s.WriteString(" where ")
+
 	x := 0
 	for key, _ := range options {
+		if x == 0 {
+			s.WriteString(" where ")
+		}
 		if x > 0 {
 			s.WriteString(" and ")
 		}
@@ -110,7 +122,30 @@ func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options Searc
 		s.WriteString(repo.Modl.Dialect.BindVar(x))
 		x++
 	}
-	if x > 0 {
+	//generate order by
+	for i, col := range table.Keys {
+		if i == 0 {
+			s.WriteString(" order by ")
+		}
+		if i > 0 {
+			s.WriteString(",")
+		}
+		s.WriteString(repo.Modl.Dialect.QuoteField(col.ColumnName))
+	}
+
+	if s.Len() > 0 {
+		//generate limit offset if applicable
+		if len(pos) == 2 {
+
+			if pos[0] > pos[1] {
+				pos[0], pos[1] = pos[1], pos[0]
+			}
+			if pos[0] <= 0 {
+				pos[1] = 1
+			}
+			s.WriteString(" limit " + strconv.Itoa(pos[1]-pos[0]+1) + " offset " + strconv.Itoa(pos[0]-1))
+
+		}
 		sql += s.String()
 	}
 	return sql

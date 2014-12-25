@@ -3,9 +3,9 @@ package controllers
 import (
 	"strconv"
 
-	"github.com/thanzen/eq/services/userservice"
-
 	"github.com/gin-gonic/gin"
+	"github.com/thanzen/eq/models/user"
+	"github.com/thanzen/eq/services/userservice"
 )
 
 type UserController struct {
@@ -22,15 +22,16 @@ func (ct UserController) get(c *gin.Context) {
 		c.Error(err, "Invalid id")
 		c.Abort(500)
 	} else {
-		user := ct.UserService.GetById(id)
-		c.JSON(200, user)
+		var u *user.User
+		ct.UserService.Get(u, id)
+		c.JSON(200, u)
 	}
 
 }
 func (ct UserController) getall(c *gin.Context) {
 
-	//todo:add conditon list
-	users := ct.UserService.GetList()
+	var users []*user.User
+	ct.UserService.GetList(&users, nil, 1, 5)
 
 	c.JSON(200, users)
 

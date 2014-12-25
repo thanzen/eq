@@ -4,59 +4,27 @@ import (
 	//"errors"
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
+	"github.com/thanzen/modl"
 )
 
 type UserService struct {
-	*services.DbContext
+	repo services.Repositoryer
 }
 
-func CreateUserService(dbcontext *services.DbContext) UserService {
-	c := UserService{}
+func Create(modl *modl.DbMap) *UserService {
+	c := &UserService{}
+	c.repo = &services.DefaultRepository{Modl: modl}
 	return c
 }
 
-func (serv *UserService) GetById(id int) *user.User {
-	if id <= 0 {
-		return nil
-	}
-	var u *user.User
-	err := serv.Modl.Get(u, id)
-	if err != nil {
-		return nil
-	}
-	return u
+func (serv *UserService) Get(u *user.User, id int) error {
+	return serv.repo.Get(u, id)
 }
 
-//Save provides Insert and Update for user.User.
-//When u(user) is nil, it performs insert, otherwise, it performs update.
-//Todo: added error log
-func (serv *UserService) Save(u *user.User) *user.User {
-	if u == nil {
-		return nil
-	}
-	var err error
-	if u.Id <= 0 {
-		err = serv.Modl.Insert(u)
-	} else {
-		_, err = serv.Modl.Update(u)
-	}
-	if err != nil {
-		return nil
-	}
-	return u
+func (serv *UserService) Save(u *user.User) error {
+	return serv.repo.Save(u)
 }
 
-func (serv *UserService) GetList() []*user.User {
-
-	//query := "select * from user_meta"
-
-	// pass a slice to Select()
-	list := []*user.User{}
-	dfservice := &services.DefaultRepository{Modl: serv.DbContext.Modl}
-	err := dfservice.GetList(&list, nil)
-	//err := serv.Modl.Select(&list, query)
-	if err != nil {
-		panic(err)
-	}
-	return list
+func (serv *UserService) GetList(list *[]*user.User, options services.SearchOptions, pos ...int) error {
+	return serv.repo.GetList(list, options, pos...)
 }

@@ -7,10 +7,11 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/thanzen/eq/models/user"
-	"github.com/thanzen/eq/services"
+	//	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/singleton"
 	"github.com/thanzen/modl"
 	"log"
+	"os"
 )
 
 func initDb() *modl.DbMap {
@@ -65,11 +66,15 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	dbcontext := services.DbContext{dbmap}
+	//dbcontext := services.DbContext{dbmap}
 
-	singleton.RegisterServices(&dbcontext)
+	singleton.RegisterServices(dbmap)
 	singleton.RegisterControllers(router, root)
+	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
+
 	// Listen and server on 0.0.0.0:8080
 	router.Run(":8080")
+	// Turn off tracing
+	//dbmap.TraceOff()
 
 }

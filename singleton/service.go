@@ -1,12 +1,12 @@
 package singleton
 
 import (
-	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/services/userservice"
+	"github.com/thanzen/modl"
 )
 
 var Users *userservice.UserService
 
-func RegisterServices(dbcontext *services.DbContext) {
-	Users = &userservice.UserService{DbContext: dbcontext}
+func RegisterServices(m *modl.DbMap) {
+	Users = userservice.Create(m)
 }
