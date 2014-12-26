@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/thanzen/eq/models/user"
+	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/services/userservice"
+	"log"
+	"strconv"
 )
 
 type UserController struct {
@@ -13,8 +14,10 @@ type UserController struct {
 }
 
 func (ct *UserController) Register(engine *gin.Engine, group ...*gin.RouterGroup) {
+	log.Println("register called")
 	engine.GET("user/:id", ct.get)
-	engine.GET("users", ct.getall)
+	engine.GET("/users", ct.getall)
+	engine.POST("/login", ct.login)
 }
 func (ct UserController) get(c *gin.Context) {
 	id, err := strconv.Atoi(c.Params.ByName("id"))
@@ -35,4 +38,18 @@ func (ct UserController) getall(c *gin.Context) {
 
 	c.JSON(200, users)
 
+}
+func (ct UserController) login(c *gin.Context) {
+	// Example for binding JSON ({"user": "manu", "password": "123"})
+	var json, u user.LoginAccount
+	c.Bind(&json) // This will infer what binder to use depending on the content-type header.
+	log.Println(json)
+	conds := services.SearchOptions{"user_name": "lnelson0"}
+	ct.UserService.Login(&u, conds)
+	//log.Println(u)
+	if u.Username == json.Username {
+		c.JSON(200, gin.H{"status": "you are logged in"})
+	} else {
+		c.JSON(401, gin.H{"status": "unauthorized"})
+	}
 }

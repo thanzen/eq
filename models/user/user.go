@@ -26,3 +26,10 @@ type User struct {
 	City             string    `json:"city" db:"city"`
 	Postcode         string    `json:"postCode" db:"post_code"`
 }
+
+type LoginAccount struct {
+	Id           int    `json:"id" db:"id"`
+	Username     string `json:"userName" db:"user_name"`
+	Password     string `json:"password" db:"password"`
+	PasswordSalt string `json:"passwordSalt" db:"password_salt"`
+}
