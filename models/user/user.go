@@ -4,9 +4,9 @@ import "time"
 
 type User struct {
 	Id               int       `json:"id" db:"id"`
-	Username         string    `json:"userName" db:"user_name"`
-	Firstname        string    `json:"firstName" db:"first_name"`
-	Lastname         string    `json:"lastName" db:"last_name"`
+	Username         string    `json:"username" db:"user_name"`
+	Firstname        string    `json:"firstname" db:"first_name"`
+	Lastname         string    `json:"lastname" db:"last_name"`
 	Email            string    `json:"email" db:"email"`
 	Password         string    `json:"password" db:"password"`
 	PasswordSalt     string    `json:"passwordSalt" db:"password_salt"`
@@ -29,7 +29,7 @@ type User struct {
 
 type LoginAccount struct {
 	Id           int    `json:"id" db:"id"`
-	Username     string `json:"userName" db:"user_name"`
+	Username     string `json:"userName" db:"user_name" binding:"required"`
 	Password     string `json:"password" db:"password"`
 	PasswordSalt string `json:"passwordSalt" db:"password_salt"`
 }

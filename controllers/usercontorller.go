@@ -42,11 +42,12 @@ func (ct UserController) getall(c *gin.Context) {
 func (ct UserController) login(c *gin.Context) {
 	// Example for binding JSON ({"user": "manu", "password": "123"})
 	var json, u user.LoginAccount
+
 	c.Bind(&json) // This will infer what binder to use depending on the content-type header.
-	log.Println(json)
+
 	conds := services.SearchOptions{"user_name": "lnelson0"}
 	ct.UserService.Login(&u, conds)
-	//log.Println(u)
+	//todo: add real authentication logic
 	if u.Username == json.Username {
 		c.JSON(200, gin.H{"status": "you are logged in"})
 	} else {

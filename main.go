@@ -54,7 +54,7 @@ func main() {
 	defer dbmap.Db.Close()
 
 	//router.Use(web.InjectGorp(dbmap))
-	root := router.Group("/v1")
+	root := router.Group("/api")
 	//gin.SetMode(gin.TestMode)
 	router.LoadHTMLTemplates("templates/*")
 	router.GET("/index", func(c *gin.Context) {
@@ -65,7 +65,7 @@ func main() {
 	// Global middlewares
 	//router.Use(gin.Logger())
 	//router.Use(gin.Recovery())
-
+	router.Use(CORSMiddleware())
 	//dbcontext := services.DbContext{dbmap}
 
 	singleton.RegisterServices(dbmap)
@@ -77,4 +77,21 @@ func main() {
 	// Turn off tracing
 	//dbmap.TraceOff()
 
+}
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set(
+			"Access-Control-Allow-Methods",
+			"POST, GET, OPTIONS, PUT, PATCH, DELETE")
+		c.Writer.Header().Set(
+			"Access-Control-Allow-Headers",
+			"Content-Type, Content-Length, Accept-Encoding, Content-Range, Content-Disposition, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.Abort(200)
+			return
+		}
+		// c.Next()
+	}
 }

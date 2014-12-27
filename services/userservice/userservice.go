@@ -5,7 +5,7 @@ import (
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/modl"
-	"log"
+	//	"log"
 )
 
 type UserService struct {
@@ -35,10 +35,8 @@ func (serv *UserService) GetList(list *[]*user.User, options services.SearchOpti
 func (serv *UserService) Login(u *user.LoginAccount, options services.SearchOptions) error {
 	var list []*user.LoginAccount
 	err := serv.loginRepo.GetList(&list, options)
-	log.Println("list1:", list)
 	if len(list) == 1 {
-		u = list[0]
+		*u = *(list[0])
 	}
-	log.Println("list2:", u)
 	return err
 }
