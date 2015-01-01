@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/thanzen/eq/util"
 	"github.com/thanzen/modl"
+	//"log"
 	"reflect"
 	"strconv"
 )
@@ -24,6 +25,7 @@ type Repositoryer interface {
 	Update(dest interface{}) error
 	GetList(dest interface{}, options SearchOptions, pos ...int) error
 	Delete(dest interface{}) error
+	First(dest interface{}, options SearchOptions) error
 }
 
 //DefaultRepository provides basic implementation of Repositoryer
@@ -42,10 +44,26 @@ func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error 
 	return err
 }
 
+//Get returns the entity by given keys.
+//The sequence of the keys follows the sequence of the properties in the dest class
+func (repo *DefaultRepository) First(dest interface{}, options SearchOptions) error {
+	sql := repo.GenerateSelectSql(dest, options)
+	if sql == "" {
+		return errors.New("Generate sql error")
+	}
+	sql += " limit 1"
+	var err error
+	if len(options) > 0 {
+		vals := util.GetMapValues(options)
+		err = repo.Modl.Dbx.Get(dest, sql, vals...)
+	}
+	return err
+}
+
 //Save provides Insert and Update for given type instance.
 //When the id for give type instance(dest) is nil, it performs insert, otherwise, it performs update.
 //Therefore, it assumes that the given type contain Id column as its primary key in the database
-//Shen the given dest contains other primary keys than Id, please do not call this function for inserting
+//Shen the given dest contains other  keys than Id, please do not call this function for inserting
 //,since it may cuase unexpected result
 func (repo *DefaultRepository) Save(dest interface{}) error {
 	v := reflect.ValueOf(dest)

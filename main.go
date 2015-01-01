@@ -2,7 +2,7 @@ package main
 
 import (
 	//"database/sql"
-	"fmt"
+	//"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -27,7 +27,7 @@ func initDb() *modl.DbMap {
 	checkErr(err, "sql.Open failed")
 
 	dbmap := modl.NewDbMap(db.DB, modl.PostgresDialect{})
-	fmt.Println("connected!")
+	//fmt.Println("connected!")
 	// construct a gorp DbMap
 	//dbmap := &modl.DbMap{Db: db.DB, Dialect: modl.PostgresDialect{}}
 
@@ -75,7 +75,7 @@ func main() {
 	// Listen and server on 0.0.0.0:8080
 	router.Run(":8080")
 	// Turn off tracing
-	//dbmap.TraceOff()
+	dbmap.TraceOff()
 
 }
 func CORSMiddleware() gin.HandlerFunc {

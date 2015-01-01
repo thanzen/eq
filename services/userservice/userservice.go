@@ -5,7 +5,7 @@ import (
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/modl"
-	//	"log"
+	//"log"
 )
 
 type UserService struct {
@@ -33,10 +33,6 @@ func (serv *UserService) GetList(list *[]*user.User, options services.SearchOpti
 }
 
 func (serv *UserService) Login(u *user.LoginAccount, options services.SearchOptions) error {
-	var list []*user.LoginAccount
-	err := serv.loginRepo.GetList(&list, options)
-	if len(list) == 1 {
-		*u = *(list[0])
-	}
+	err := serv.loginRepo.First(u, options)
 	return err
 }

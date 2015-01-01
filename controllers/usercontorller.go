@@ -5,7 +5,7 @@ import (
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/services/userservice"
-	"log"
+	//"log"
 	"strconv"
 )
 
@@ -14,7 +14,7 @@ type UserController struct {
 }
 
 func (ct *UserController) Register(engine *gin.Engine, group ...*gin.RouterGroup) {
-	log.Println("register called")
+	//log.Println("register called")
 	engine.GET("user/:id", ct.get)
 	engine.GET("/users", ct.getall)
 	engine.POST("/login", ct.login)
@@ -42,9 +42,7 @@ func (ct UserController) getall(c *gin.Context) {
 func (ct UserController) login(c *gin.Context) {
 	// Example for binding JSON ({"user": "manu", "password": "123"})
 	var json, u user.LoginAccount
-
 	c.Bind(&json) // This will infer what binder to use depending on the content-type header.
-
 	conds := services.SearchOptions{"user_name": "lnelson0"}
 	ct.UserService.Login(&u, conds)
 	//todo: add real authentication logic
