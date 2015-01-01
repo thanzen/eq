@@ -5,7 +5,7 @@ import (
 	"github.com/thanzen/eq/models/user"
 	"github.com/thanzen/eq/services"
 	"github.com/thanzen/eq/services/userservice"
-	//"log"
+	"log"
 	"strconv"
 )
 
@@ -14,7 +14,7 @@ type UserController struct {
 }
 
 func (ct *UserController) Register(engine *gin.Engine, group ...*gin.RouterGroup) {
-	//log.Println("register called")
+	log.Println("register called")
 	engine.GET("user/:id", ct.get)
 	engine.GET("/users", ct.getall)
 	engine.POST("/login", ct.login)
@@ -31,24 +31,27 @@ func (ct UserController) get(c *gin.Context) {
 	}
 
 }
+func (uc UserController) update(c *gin.Context) {
+
+}
 func (ct UserController) getall(c *gin.Context) {
 
 	var users []*user.User
-	ct.UserService.GetList(&users, nil, 1, 5)
+	conds := services.SearchOptions{"deleted": false, "active": true}
+	ct.UserService.GetList(&users, conds, 1, 5)
 
 	c.JSON(200, users)
-
 }
 func (ct UserController) login(c *gin.Context) {
 	// Example for binding JSON ({"user": "manu", "password": "123"})
 	var json, u user.LoginAccount
 	c.Bind(&json) // This will infer what binder to use depending on the content-type header.
-	conds := services.SearchOptions{"user_name": "lnelson0"}
+	conds := services.SearchOptions{"user_name": "lnelson0", "deleted": false, "active": true}
 	ct.UserService.Login(&u, conds)
 	//todo: add real authentication logic
 	if u.Username == json.Username {
-		c.JSON(200, gin.H{"status": "you are logged in"})
+		c.JSON(200, gin.H{"status" + u.Username: "you are logged in" + json.Username})
 	} else {
-		c.JSON(401, gin.H{"status": "unauthorized"})
+		c.JSON(401, gin.H{"status  " + u.Username: "unauthorized  " + json.Username})
 	}
 }

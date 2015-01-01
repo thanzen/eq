@@ -5,9 +5,9 @@ package services
 import (
 	"bytes"
 	"errors"
-	"github.com/thanzen/eq/util"
+	//	"github.com/thanzen/eq/util"
 	"github.com/thanzen/modl"
-	//"log"
+	"log"
 	"reflect"
 	"strconv"
 )
@@ -47,15 +47,15 @@ func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error 
 //Get returns the entity by given keys.
 //The sequence of the keys follows the sequence of the properties in the dest class
 func (repo *DefaultRepository) First(dest interface{}, options SearchOptions) error {
-	sql := repo.GenerateSelectSql(dest, options)
+	sql, params := repo.GenerateSelectSql(dest, options)
 	if sql == "" {
 		return errors.New("Generate sql error")
 	}
 	sql += " limit 1"
 	var err error
 	if len(options) > 0 {
-		vals := util.GetMapValues(options)
-		err = repo.Modl.Dbx.Get(dest, sql, vals...)
+		log.Println(sql, params)
+		err = repo.Modl.Dbx.Get(dest, sql, params...)
 	}
 	return err
 }
@@ -89,14 +89,13 @@ func (repo *DefaultRepository) Update(dest interface{}) error {
 }
 
 func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions, pos ...int) error {
-	sql := repo.GenerateSelectSql(dest, options, pos...)
+	sql, params := repo.GenerateSelectSql(dest, options, pos...)
 	if sql == "" {
 		return errors.New("Generate sql error")
 	}
 	var err error
 	if len(options) > 0 {
-		vals := util.GetMapValues(options)
-		err = repo.Modl.Select(dest, sql, vals...)
+		err = repo.Modl.Select(dest, sql, params...)
 	} else {
 		err = repo.Modl.Select(dest, sql)
 	}
@@ -116,20 +115,22 @@ func (repo *DefaultRepository) Delete(dest interface{}) error {
 //note: in order to avoid sql injection, GenerateSelectSql function skip to
 //fill the search option values in, instead, use ? as parameters so that
 //necessary validation will be performed  by database/sql package.
-func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options SearchOptions, pos ...int) string {
+func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options SearchOptions, pos ...int) (string, []interface{}) {
 	table := repo.Modl.TableFor(dest)
 	if table == nil || len(table.Columns) < 1 {
-		return ""
+		return "", nil
 	}
 	sql := repo.getSelectAll(table)
 	if sql == "" {
-		return sql
+		return sql, nil
 	}
 	s := bytes.Buffer{}
 
 	x := 0
-	for key, _ := range options {
+	var params []interface{}
+	for key, val := range options {
 		if x == 0 {
+			params = make([]interface{}, len(options))
 			s.WriteString(" where ")
 		}
 		if x > 0 {
@@ -138,6 +139,7 @@ func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options Searc
 		s.WriteString(repo.Modl.Dialect.QuoteField(key))
 		s.WriteString("=")
 		s.WriteString(repo.Modl.Dialect.BindVar(x))
+		params[x] = val
 		x++
 	}
 	//generate order by
@@ -166,7 +168,7 @@ func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options Searc
 		}
 		sql += s.String()
 	}
-	return sql
+	return sql, params
 }
 func (repo *DefaultRepository) getSelectAll(table *modl.TableMap) string {
 	if repo.selectAll == "" {
