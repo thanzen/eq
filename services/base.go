@@ -1,13 +1,12 @@
 package services
 
-//todo: add skip funcationality for retriving list
 //todo: add count functionality for retriving list
 import (
 	"bytes"
 	"errors"
 	//	"github.com/thanzen/eq/util"
 	"github.com/thanzen/modl"
-	"log"
+	//	"log"
 	"reflect"
 	"strconv"
 )
@@ -24,6 +23,7 @@ type Repositoryer interface {
 	Insert(dest interface{}) error
 	Update(dest interface{}) error
 	GetList(dest interface{}, options SearchOptions, pos ...int) error
+	Count(dest interface{}, options SearchOptions) (int, error)
 	Delete(dest interface{}) error
 	First(dest interface{}, options SearchOptions) error
 }
@@ -38,10 +38,9 @@ type DefaultRepository struct {
 //The sequence of the keys follows the sequence of the properties in the dest class
 func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error {
 	if len(keys) <= 0 {
-		return errors.New("Keys can not be empty")
+		return errors.New("keys can not be empty")
 	}
-	err := repo.Modl.Get(dest, keys...)
-	return err
+	return repo.Modl.Get(dest, keys...)
 }
 
 //Get returns the entity by given keys.
@@ -52,12 +51,10 @@ func (repo *DefaultRepository) First(dest interface{}, options SearchOptions) er
 		return errors.New("Generate sql error")
 	}
 	sql += " limit 1"
-	var err error
 	if len(options) > 0 {
-		log.Println(sql, params)
-		err = repo.Modl.Dbx.Get(dest, sql, params...)
+		return repo.Modl.Dbx.Get(dest, sql, params...)
 	}
-	return err
+	return nil
 }
 
 //Save provides Insert and Update for given type instance.
@@ -93,14 +90,31 @@ func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions, 
 	if sql == "" {
 		return errors.New("Generate sql error")
 	}
-	var err error
 	if len(options) > 0 {
-		err = repo.Modl.Select(dest, sql, params...)
+		return repo.Modl.Select(dest, sql, params...)
 	} else {
-		err = repo.Modl.Select(dest, sql)
+		return repo.Modl.Select(dest, sql)
 	}
+}
 
-	return err
+//todo:test the code change
+func (repo *DefaultRepository) Count(dest interface{}, options SearchOptions) (int, error) {
+	//sql, params := repo.GenerateSelectSql(dest, options)
+
+	table := repo.Modl.TableFor(dest)
+
+	if table == nil || len(table.Columns) < 1 {
+		return 0, nil
+	}
+	sql := "select count(1) from " + table.TableName
+	if sql == "" {
+		return 0, errors.New("Generate sql error")
+	}
+	s, params := repo.generateWhere(options)
+	sql += s.String() + ";"
+	var n int
+	err := repo.Modl.Dbx.Get(&n, sql, params...)
+	return n, err
 }
 
 func (repo *DefaultRepository) Delete(dest interface{}) error {
@@ -124,24 +138,8 @@ func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options Searc
 	if sql == "" {
 		return sql, nil
 	}
-	s := bytes.Buffer{}
-
-	x := 0
-	var params []interface{}
-	for key, val := range options {
-		if x == 0 {
-			params = make([]interface{}, len(options))
-			s.WriteString(" where ")
-		}
-		if x > 0 {
-			s.WriteString(" and ")
-		}
-		s.WriteString(repo.Modl.Dialect.QuoteField(key))
-		s.WriteString("=")
-		s.WriteString(repo.Modl.Dialect.BindVar(x))
-		params[x] = val
-		x++
-	}
+	//generate where and params
+	s, params := repo.generateWhere(options)
 	//generate order by
 	for i, col := range table.Keys {
 		if i == 0 {
@@ -169,6 +167,27 @@ func (repo *DefaultRepository) GenerateSelectSql(dest interface{}, options Searc
 		sql += s.String()
 	}
 	return sql, params
+}
+func (repo *DefaultRepository) generateWhere(options SearchOptions) (bytes.Buffer, []interface{}) {
+	s := bytes.Buffer{}
+
+	x := 0
+	var params []interface{}
+	for key, val := range options {
+		if x == 0 {
+			params = make([]interface{}, len(options))
+			s.WriteString(" where ")
+		}
+		if x > 0 {
+			s.WriteString(" and ")
+		}
+		s.WriteString(repo.Modl.Dialect.QuoteField(key))
+		s.WriteString("=")
+		s.WriteString(repo.Modl.Dialect.BindVar(x))
+		params[x] = val
+		x++
+	}
+	return s, params
 }
 func (repo *DefaultRepository) getSelectAll(table *modl.TableMap) string {
 	if repo.selectAll == "" {

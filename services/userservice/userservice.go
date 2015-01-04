@@ -27,12 +27,16 @@ func (serv *UserService) Get(u *user.User, id int) error {
 func (serv *UserService) Save(u *user.User) error {
 	return serv.repo.Save(u)
 }
+func (serv *UserService) CreateAccount(u *user.LoginAccount) error {
+	return serv.loginRepo.Save(u)
+}
 
 func (serv *UserService) GetList(list *[]*user.User, options services.SearchOptions, pos ...int) error {
 	return serv.repo.GetList(list, options, pos...)
 }
-
+func (serv *UserService) Count(u *user.User, options services.SearchOptions) (int, error) {
+	return serv.repo.Count(u, options)
+}
 func (serv *UserService) Login(u *user.LoginAccount, options services.SearchOptions) error {
-	err := serv.loginRepo.First(u, options)
-	return err
+	return serv.loginRepo.First(u, options)
 }

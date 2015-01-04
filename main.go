@@ -27,6 +27,7 @@ func initDb() *modl.DbMap {
 	checkErr(err, "sql.Open failed")
 
 	dbmap := modl.NewDbMap(db.DB, modl.PostgresDialect{})
+
 	//fmt.Println("connected!")
 	// construct a gorp DbMap
 	//dbmap := &modl.DbMap{Db: db.DB, Dialect: modl.PostgresDialect{}}
@@ -51,6 +52,8 @@ func checkErr(err error, msg string) {
 func main() {
 	router := gin.Default()
 	dbmap := initDb()
+	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
+
 	defer dbmap.Db.Close()
 
 	//router.Use(web.InjectGorp(dbmap))
@@ -70,7 +73,6 @@ func main() {
 
 	singleton.RegisterServices(dbmap)
 	singleton.RegisterControllers(router, root)
-	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
 
 	// Listen and server on 0.0.0.0:8080
 	router.Run(":8080")
