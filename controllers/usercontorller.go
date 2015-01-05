@@ -27,8 +27,8 @@ func (uc UserController) get(c *gin.Context) {
 		c.Error(err, "Invalid id")
 		c.Abort(500)
 	} else {
-		var u *user.User
-		uc.UserService.Get(u, id)
+		var u user.User
+		uc.UserService.Get(&u, id)
 		c.JSON(200, u)
 	}
 }

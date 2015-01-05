@@ -8,7 +8,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/thanzen/eq/models/user"
 	//	"github.com/thanzen/eq/services"
-	"github.com/thanzen/eq/singleton"
+	controller "github.com/thanzen/eq/controllers/singleton"
+	service "github.com/thanzen/eq/services/singleton"
 	"github.com/thanzen/modl"
 	"log"
 	"os"
@@ -71,8 +72,8 @@ func main() {
 	router.Use(CORSMiddleware())
 	//dbcontext := services.DbContext{dbmap}
 
-	singleton.RegisterServices(dbmap)
-	singleton.RegisterControllers(router, root)
+	service.RegisterServices(dbmap)
+	controller.RegisterControllers(router, root)
 
 	// Listen and server on 0.0.0.0:8080
 	router.Run(":8080")

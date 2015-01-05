@@ -1,6 +1,5 @@
 package services
 
-//todo: add count functionality for retriving list
 import (
 	"bytes"
 	"errors"
@@ -28,6 +27,9 @@ type Repositoryer interface {
 	First(dest interface{}, options SearchOptions) error
 }
 
+//make sure DefaultRepository implements interface Repositoryer
+var _ Repositoryer = &DefaultRepository{nil, ""}
+
 //DefaultRepository provides basic implementation of Repositoryer
 type DefaultRepository struct {
 	Modl      *modl.DbMap
@@ -48,7 +50,7 @@ func (repo *DefaultRepository) Get(dest interface{}, keys ...interface{}) error 
 func (repo *DefaultRepository) First(dest interface{}, options SearchOptions) error {
 	sql, params := repo.GenerateSelectSql(dest, options)
 	if sql == "" {
-		return errors.New("Generate sql error")
+		return errors.New("sql generation error")
 	}
 	sql += " limit 1"
 	if len(options) > 0 {
@@ -60,7 +62,7 @@ func (repo *DefaultRepository) First(dest interface{}, options SearchOptions) er
 //Save provides Insert and Update for given type instance.
 //When the id for give type instance(dest) is nil, it performs insert, otherwise, it performs update.
 //Therefore, it assumes that the given type contain Id column as its primary key in the database
-//Shen the given dest contains other  keys than Id, please do not call this function for inserting
+//Then the given dest contains other  keys than Id, please do not call this function for inserting
 //,since it may cuase unexpected result
 func (repo *DefaultRepository) Save(dest interface{}) error {
 	v := reflect.ValueOf(dest)
@@ -72,13 +74,13 @@ func (repo *DefaultRepository) Save(dest interface{}) error {
 }
 func (repo *DefaultRepository) Insert(dest interface{}) error {
 	if dest == nil {
-		return errors.New("Insert error : object can not be empty")
+		return errors.New("object can not be empty")
 	}
 	return repo.Modl.Insert(dest)
 }
 func (repo *DefaultRepository) Update(dest interface{}) error {
 	if dest == nil {
-		return errors.New("Update error :object can not be empty")
+		return errors.New("object can not be empty")
 	}
 	_, err := repo.Modl.Update(dest)
 	return err
@@ -88,7 +90,7 @@ func (repo *DefaultRepository) Update(dest interface{}) error {
 func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions, pos ...int) error {
 	sql, params := repo.GenerateSelectSql(dest, options, pos...)
 	if sql == "" {
-		return errors.New("Generate sql error")
+		return errors.New("sql generation error")
 	}
 	if len(options) > 0 {
 		return repo.Modl.Select(dest, sql, params...)
@@ -97,7 +99,6 @@ func (repo *DefaultRepository) GetList(dest interface{}, options SearchOptions, 
 	}
 }
 
-//todo:test the code change
 func (repo *DefaultRepository) Count(dest interface{}, options SearchOptions) (int, error) {
 	//sql, params := repo.GenerateSelectSql(dest, options)
 
@@ -108,7 +109,7 @@ func (repo *DefaultRepository) Count(dest interface{}, options SearchOptions) (i
 	}
 	sql := "select count(1) from " + table.TableName
 	if sql == "" {
-		return 0, errors.New("Generate sql error")
+		return 0, errors.New("sql generation error")
 	}
 	s, params := repo.generateWhere(options)
 	sql += s.String() + ";"
@@ -119,7 +120,7 @@ func (repo *DefaultRepository) Count(dest interface{}, options SearchOptions) (i
 
 func (repo *DefaultRepository) Delete(dest interface{}) error {
 	if dest == nil {
-		return errors.New("Delete error : object can not be empty")
+		return errors.New("object can not be empty")
 	}
 	_, err := repo.Modl.Delete(dest)
 	return err
