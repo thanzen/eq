@@ -25,6 +25,7 @@ type User struct {
 	Country          string    `json:"country" db:"country"`
 	City             string    `json:"city" db:"city"`
 	Postcode         string    `json:"postCode" db:"post_code"`
+	UserTypeId       int       `json:"userTypeId" db:"user_type_id"`
 }
 type UpdateAccount struct {
 	Id              int       `json:"id" db:"id"`
