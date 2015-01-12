@@ -35,8 +35,9 @@ func initDb() *modl.DbMap {
 
 	// add a table, setting the table name to 'user_meta' and
 	// specifying that the Id property is an auto incrementing PK
-	dbmap.AddTableWithName(user.User{}, "user_meta").SetKeys(true, "id")
+	dbmap.AddTableWithName(user.User{}, "user_info").SetKeys(true, "id")
 	dbmap.AddTableWithName(user.LoginAccount{}, "user_meta").SetKeys(true, "id")
+	dbmap.AddTableWithName(user.UserType{}, "user_type").SetKeys(true, "id")
 	// create the table. in a production system you'd generally
 	// use a migration tool, or create the tables via scripts
 	err = dbmap.CreateTablesIfNotExists()
