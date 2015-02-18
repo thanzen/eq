@@ -1,0 +1,10 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}
+    <title>{{.TheUser.Username}} - {{i18n .Lang "app_name"}}</title>
+{{end}}
+{{define "body"}}
+<div id="content" class="user-page">
+need something in here!
+</div>
+{{end}}
