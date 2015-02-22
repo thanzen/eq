@@ -62,30 +62,30 @@
                                     <input id="profile-username" value="{{.User.Username}}" type="text" class="form-control" disabled>
                                 </div>
                             </div>
- 
+
                             <div class="col-md-6">
                                 {{template "base/form/field_group.html" .ProfileFormSets.Fields.NickName}}
                             </div>
                         </div>
- 
+
                         <div class="row">
                             <div class="col-md-6">
                                 {{with .ProfileFormSets.Fields.Email}}
-                                <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.IsActive}} has-warning{{end}}">
+                                <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.Active}} has-warning{{end}}">
                                     {{.Label}}
                                     {{call .Field}}
                                     <p class="error-block">
                                         {{if .Error}}{{.Error}}{{else}}
-                                            {{if not $.User.IsActive}}{{i18n $.Lang "auth.please_verify_email"}}{{end}}
+                                            {{if not $.User.Active}}{{i18n $.Lang "auth.please_verify_email"}}{{end}}
                                         {{end}}
                                     </p>
                                     {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                                 </div>
                                 {{end}}
 
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.PublicEmail}}
 
-                                {{if .User.IsActive}}{{else}}
+
+                                {{if .User.Active}}{{else}}
                                 <div class="form-group">
                                     <button id="verify-mail-send" type="button" data-loading-text="{{i18n .Lang "auth.verify_email_sended"}}" class="btn btn-warning btn-xs">{{i18n .Lang "auth.send_verify_email"}}</button>
                                 </div>
@@ -115,133 +115,13 @@
 
                             </div>
 
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Info}}
-                            </div>
+
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Company}}
-                            </div>
+                       </form>
 
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Location}}
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Lang}}
-                            </div>
 
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.LangAdds}}
-                            </div>
-                        </div>
-
-                        <h3 class="underline">{{i18n .Lang "auth.social_info"}}</h3>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{with .ProfileFormSets.Fields.Github}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-github-alt"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-
-                                {{with .ProfileFormSets.Fields.Weibo}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-weibo"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-
-                                {{with .ProfileFormSets.Fields.Linkedin}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-linkedin"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{with .ProfileFormSets.Fields.Google}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-google-plus"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-
-                                {{with .ProfileFormSets.Fields.Twitter}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-twitter"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-
-                                {{with .ProfileFormSets.Fields.Facebook}}
-                                    <div class="form-group{{if .Error}} has-error{{end}}">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><i class="icon-facebook"></i></span>
-                                            {{call .Field}}
-                                        </div>
-                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                    </div>
-                                {{end}}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <input type="hidden" name="action" value="save-profile">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "auth.save_profile"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-
-                    <h3 class="underline">{{i18n .Lang "auth.reset_password"}}</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <form method="POST" action="{{.AppUrl}}settings/profile">
-                                {{.xsrf_html}}{{.once_html}}
-
-                                {{template "base/form/fields.html" .PasswordFormSets}}
-
-                                <div class="form-group">
-                                    <input type="hidden" name="action" value="change-password">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "auth.change_password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-            </div>
         </div>
 	</div>
 </div>

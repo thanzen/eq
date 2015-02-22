@@ -133,22 +133,16 @@ func settingCompress() {
 }
 
 func loadConfig() {
-
-	//AppName = beego.AppConfig.DefaultString("app", "app_name", "WeTalk Community")
-	//beego.AppName = AppName
-
-	//AppHost = Cfg.MustValue("app", "app_host", "127.0.0.1:8092")
-	//AppUrl = Cfg.MustValue("app", "app_url", "http://127.0.0.1:8092/")
-	//AppLogo = Cfg.MustValue("app", "app_logo", "/static/img/logo.gif")
-
-	AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
+    AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
 	IsProMode = beego.RunMode == "pro"
 
 	CacheTime = beego.AppConfig.DefaultInt64("cache_time", 300)
 	cachemanager.ExpireTime = CacheTime
 	AppHost = beego.HttpAddr + ":" + strconv.Itoa(beego.HttpPort)
-	AppUrl = beego.AppConfig.DefaultString("app_url", "http://localhost:8080/")
+//	AppUrl = beego.AppConfig.DefaultString("app_url", "http://localhost:8080/")
+    AppUrl = "http://"+ AppHost+"/"
+    beego.Info(AppUrl)
 	EnforceRedirect = beego.AppConfig.DefaultBool("enforce_redirect", false)
 	AppLogo = beego.AppConfig.DefaultString("app_logo", "/static/img/logo.gif")
 	//todo change later
