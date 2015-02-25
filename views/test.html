@@ -8,9 +8,22 @@
 
 </head>
 <body>
-<div id="roles">
-</div>
+<div id="roles"></div>
+<div id="users"></div>
     <script type="text/jsx" src="../Scripts/components/users/role.js"></script>
+    <script type="text/jsx" src="../Scripts/components/users/users.js"></script>
+<script type="text/jsx">
+    var data = [{id: 1, firstName: "Billy", lastName: "Bob"}, {id: 2, firstName: "Joe", lastName: "James"}];
+    React.render(
+            <RoleComboList> </RoleComboList>,
+            document.getElementById('roles')
+    );
+
+    React.render(
+            <UserList data={data}> </UserList>,
+            document.getElementById('users')
+    );
+</script>
 
 </body>
 </html>
