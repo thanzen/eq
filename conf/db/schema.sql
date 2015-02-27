@@ -197,6 +197,3 @@ CREATE INDEX fki_user_role_role
   ON user_role
   USING btree
   (role_id);
-
-insert into user_type(id,name) values(1,'Regular');
-insert into role(id,name) values(1,'Regular');
