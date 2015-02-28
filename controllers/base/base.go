@@ -527,3 +527,8 @@ func (this *BaseRouter) setLang() bool {
 
 	return isNeedRedir
 }
+
+func (this *BaseRouter) getPaginationRange() (start, end int) {
+
+    return 0, 1
+}

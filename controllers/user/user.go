@@ -12,15 +12,8 @@ type UserController struct {
 
 func (this *UserController) getUser(u *user.User) bool {
 	username := this.GetString(":username")
-
 	u.Username = username
-
-
-
 	err := this.UserService.Read(u, "Username")
-
-
-
 	if err != nil {
 		this.Abort("404")
 		return true
