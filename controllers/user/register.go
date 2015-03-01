@@ -10,7 +10,7 @@ import (
 
 // RegisterController serves register page.
 type RegisterController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 // Get implemented Get method for RegisterController.

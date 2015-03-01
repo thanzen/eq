@@ -11,7 +11,7 @@ import (
 
 // AuthController serves login page.
 type AuthController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 // Get implemented login page.

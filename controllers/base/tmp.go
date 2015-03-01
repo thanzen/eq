@@ -5,7 +5,7 @@ import (
 )
 
 type TestRouter struct {
-    BaseRouter
+    BaseController
 }
 
 func (this *TestRouter) Get() {

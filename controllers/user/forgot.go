@@ -10,7 +10,7 @@ import (
 
 // ForgotController serves login page.
 type ForgotController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 // Get implemented Get method for ForgotController.

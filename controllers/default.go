@@ -5,7 +5,7 @@ import (
 )
 
 type MainController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 func (c *MainController) Get() {

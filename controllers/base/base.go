@@ -23,8 +23,8 @@ type NestPreparer interface {
 	NestPrepare()
 }
 
-// baseRouter implemented global settings for all other routers.
-type BaseRouter struct {
+// BaseController implemented global settings for all other routers.
+type BaseController struct {
 	beego.Controller
 	i18n.Locale
 	User        user.User
@@ -33,7 +33,7 @@ type BaseRouter struct {
 }
 
 // Prepare implemented Prepare method for baseRouter.
-func (this *BaseRouter) Prepare() {
+func (this *BaseController) Prepare() {
 
 	//initialize UserService
 	this.UserService = &userServ.UserService{}
@@ -117,11 +117,11 @@ func (this *BaseRouter) Prepare() {
 }
 
 // on router finished
-func (this *BaseRouter) Finish() {
+func (this *BaseController) Finish() {
 
 }
 
-func (this *BaseRouter) LoginUser(u *user.User, remember bool) string {
+func (this *BaseController) LoginUser(u *user.User, remember bool) string {
 	loginRedirect := strings.TrimSpace(this.Ctx.GetCookie("login_to"))
 	if utils.IsMatchHost(loginRedirect) == false {
 		loginRedirect = "/"
@@ -139,7 +139,7 @@ func (this *BaseRouter) LoginUser(u *user.User, remember bool) string {
 }
 
 // check if user not active then redirect
-func (this *BaseRouter) CheckActiveRedirect(args ...interface{}) bool {
+func (this *BaseController) CheckActiveRedirect(args ...interface{}) bool {
 	var redirect_to string
 	code := 302
 	needActive := true
@@ -180,7 +180,7 @@ func (this *BaseRouter) CheckActiveRedirect(args ...interface{}) bool {
 }
 
 // check if not login then redirect
-func (this *BaseRouter) CheckLoginRedirect(args ...interface{}) bool {
+func (this *BaseController) CheckLoginRedirect(args ...interface{}) bool {
 	var redirect_to string
 	code := 302
 	needLogin := true
@@ -224,7 +224,7 @@ func (this *BaseRouter) CheckLoginRedirect(args ...interface{}) bool {
 }
 
 // read beego flash message
-func (this *BaseRouter) FlashRead(key string) (string, bool) {
+func (this *BaseController) FlashRead(key string) (string, bool) {
 	if data, ok := this.Data["flash"].(map[string]string); ok {
 		value, ok := data[key]
 		return value, ok
@@ -233,14 +233,14 @@ func (this *BaseRouter) FlashRead(key string) (string, bool) {
 }
 
 // write beego flash message
-func (this *BaseRouter) FlashWrite(key string, value string) {
+func (this *BaseController) FlashWrite(key string, value string) {
 	flash := beego.NewFlash()
 	flash.Data[key] = value
 	flash.Store(&this.Controller)
 }
 
 // check flash redirect, ensure browser redirect to uri and display flash message.
-func (this *BaseRouter) CheckFlashRedirect(value string) (match bool, redirect bool) {
+func (this *BaseController) CheckFlashRedirect(value string) (match bool, redirect bool) {
 	v := this.GetSession("on_redirect")
 	if params, ok := v.([]interface{}); ok {
 		if len(params) != 5 {
@@ -281,7 +281,7 @@ func (this *BaseRouter) CheckFlashRedirect(value string) (match bool, redirect b
 }
 
 // set flash redirect
-func (this *BaseRouter) FlashRedirect(uri string, code int, flag string, args ...interface{}) {
+func (this *BaseController) FlashRedirect(uri string, code int, flag string, args ...interface{}) {
 	flagVal := "true"
 	times := 0
 	for _, arg := range args {
@@ -305,12 +305,12 @@ func (this *BaseRouter) FlashRedirect(uri string, code int, flag string, args ..
 }
 
 // clear flash redirect
-func (this *BaseRouter) EndFlashRedirect() {
+func (this *BaseController) EndFlashRedirect() {
 	this.DelSession("on_redirect")
 }
 
 // check form once, void re-submit
-func (this *BaseRouter) FormOnceNotMatch() bool {
+func (this *BaseController) FormOnceNotMatch() bool {
 	notMatch := false
 	recreat := false
 
@@ -338,7 +338,7 @@ func (this *BaseRouter) FormOnceNotMatch() bool {
 }
 
 // create form once html
-func (this *BaseRouter) FormOnceCreate(args ...bool) {
+func (this *BaseController) FormOnceCreate(args ...bool) {
 	var value string
 	var creat bool
 	creat = len(args) > 0 && args[0]
@@ -357,7 +357,7 @@ func (this *BaseRouter) FormOnceCreate(args ...bool) {
 	this.Data["once_html"] = template.HTML(`<input type="hidden" name="_once" value="` + value + `">`)
 }
 
-func (this *BaseRouter) validForm(form interface{}, names ...string) (bool, map[string]*validation.ValidationError) {
+func (this *BaseController) validForm(form interface{}, names ...string) (bool, map[string]*validation.ValidationError) {
 	// parse request params to form ptr struct
 	utils.ParseForm(form, this.Input())
 
@@ -386,23 +386,23 @@ func (this *BaseRouter) validForm(form interface{}, names ...string) (bool, map[
 }
 
 // valid form and put errors to tempalte context
-func (this *BaseRouter) ValidForm(form interface{}, names ...string) bool {
+func (this *BaseController) ValidForm(form interface{}, names ...string) bool {
 	valid, _ := this.validForm(form, names...)
 	return valid
 }
 
 // valid form and put errors to tempalte context
-func (this *BaseRouter) ValidFormSets(form interface{}, names ...string) bool {
+func (this *BaseController) ValidFormSets(form interface{}, names ...string) bool {
 	valid, errs := this.validForm(form, names...)
 	this.setFormSets(form, errs, names...)
 	return valid
 }
 
-func (this *BaseRouter) SetFormSets(form interface{}, names ...string) *utils.FormSets {
+func (this *BaseController) SetFormSets(form interface{}, names ...string) *utils.FormSets {
 	return this.setFormSets(form, nil, names...)
 }
 
-func (this *BaseRouter) setFormSets(form interface{}, errs map[string]*validation.ValidationError, names ...string) *utils.FormSets {
+func (this *BaseController) setFormSets(form interface{}, errs map[string]*validation.ValidationError, names ...string) *utils.FormSets {
 	formSets := utils.NewFormSets(form, errs, this.Locale)
 	name := reflect.ValueOf(form).Elem().Type().Name()
 	if len(names) > 0 {
@@ -415,7 +415,7 @@ func (this *BaseRouter) setFormSets(form interface{}, errs map[string]*validatio
 }
 
 // add valid error to FormError
-func (this *BaseRouter) SetFormError(form interface{}, fieldName, errMsg string, names ...string) {
+func (this *BaseController) SetFormError(form interface{}, fieldName, errMsg string, names ...string) {
 	name := reflect.ValueOf(form).Elem().Type().Name()
 	if len(names) > 0 {
 		name = names[0]
@@ -433,25 +433,25 @@ func (this *BaseRouter) SetFormError(form interface{}, fieldName, errMsg string,
 }
 
 // check xsrf and show a friendly page
-func (this *BaseRouter) CheckXsrfCookie() bool {
+func (this *BaseController) CheckXsrfCookie() bool {
 	return this.Controller.CheckXsrfCookie()
 }
 
-func (this *BaseRouter) SystemException() {
+func (this *BaseController) SystemException() {
 
 }
 
-func (this *BaseRouter) IsAjax() bool {
+func (this *BaseController) IsAjax() bool {
 	return this.Ctx.Input.Header("X-Requested-With") == "XMLHttpRequest"
 }
 
-func (this *BaseRouter) SetPaginator(per int, nums int64) *pagination.Paginator {
+func (this *BaseController) SetPaginator(per int, nums int64) *pagination.Paginator {
 	p := pagination.NewPaginator(this.Ctx.Request, per, nums)
 	this.Data["paginator"] = p
 	return p
 }
 
-func (this *BaseRouter) JsStorage(action, key string, values ...string) {
+func (this *BaseController) JsStorage(action, key string, values ...string) {
 	value := action + ":::" + key
 	if len(values) > 0 {
 		value += ":::" + values[0]
@@ -459,13 +459,13 @@ func (this *BaseRouter) JsStorage(action, key string, values ...string) {
 	this.Ctx.SetCookie("JsStorage", value, 1<<31-1, "/", nil, nil, false)
 }
 
-func (this *BaseRouter) setLangCookie(lang string) {
+func (this *BaseController) setLangCookie(lang string) {
 	this.Ctx.SetCookie("lang", lang, 60*60*24*365, "/", nil, nil, false)
 }
 
 //todo rewrite this part
 // setLang sets site language version.
-func (this *BaseRouter) setLang() bool {
+func (this *BaseController) setLang() bool {
 	isNeedRedir := false
 	//todo: add locale support, rewrite i18n.go
 
@@ -528,7 +528,18 @@ func (this *BaseRouter) setLang() bool {
 	return isNeedRedir
 }
 
-func (this *BaseRouter) getPaginationRange() (start, end int) {
-
-    return 0, 1
+func (this *BaseController) CheckPermission(permissions ...string)  {
+    if beego.RunMode =="dev" || len(permissions) == 0 {
+        return
+    }
+    for _,p:= range permissions {
+        if !this.UserService.HasPermission(&this.User, p) {
+            this.Ctx.Abort(401, "not authorized!")
+        }
+    }
+}
+func (this *BaseController) AuthCheck(isRedirect bool) {
+    if this.IsLogin && isRedirect {
+        this.Redirect(beego.HttpAddr, 401)
+    }
 }

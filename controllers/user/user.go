@@ -7,7 +7,7 @@ import (
 )
 
 type UserController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 func (this *UserController) getUser(u *user.User) bool {

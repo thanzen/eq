@@ -9,7 +9,7 @@ import (
 
 // SettingsRouter serves user settings.
 type ProfileController struct {
-	base.BaseRouter
+	base.BaseController
 }
 
 // Profile implemented user profile settings page.
