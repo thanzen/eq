@@ -2,13 +2,13 @@ package user
 
 import (
 	"encoding/json"
-    "fmt"
-    "github.com/astaxie/beego/validation"
+	"fmt"
+	"github.com/astaxie/beego/validation"
 	"github.com/thanzen/eq/conf/permissions"
 	"github.com/thanzen/eq/controllers/base"
 	"github.com/thanzen/eq/models/user"
 	userServes "github.com/thanzen/eq/services/user"
-    "strings"
+	"strings"
 )
 
 type roleUserModel struct {
@@ -53,8 +53,8 @@ func (this *RoleApiController) AddUsers() {
 		if err != nil {
 			this.Ctx.Abort(500, err.Error())
 		}
-    } else if model.roleId <= 0 {
-        this.Ctx.Abort(500, "invalid role id")
+	} else if model.roleId <= 0 {
+		this.Ctx.Abort(500, "invalid role id")
 	}
 	this.ServeJson()
 }
@@ -70,8 +70,8 @@ func (this *RoleApiController) DeleteUsers() {
 		if err != nil {
 			this.Ctx.Abort(500, err.Error())
 		}
-    } else if model.roleId <= 0 {
-        this.Ctx.Abort(500, "invalid role id")
+	} else if model.roleId <= 0 {
+		this.Ctx.Abort(500, "invalid role id")
 	}
 	this.ServeJson()
 }
@@ -87,8 +87,8 @@ func (this *RoleApiController) AddPermissions() {
 		if err != nil {
 			this.Ctx.Abort(500, err.Error())
 		}
-    } else if model.roleId <= 0 {
-        this.Ctx.Abort(500, "invalid role id")
+	} else if model.roleId <= 0 {
+		this.Ctx.Abort(500, "invalid role id")
 	}
 	this.ServeJson()
 }
@@ -104,8 +104,8 @@ func (this *RoleApiController) DeletePermissions() {
 		if err != nil {
 			this.Ctx.Abort(500, err.Error())
 		}
-    } else if model.roleId <= 0 {
-        this.Ctx.Abort(500, "invalid role id")
+	} else if model.roleId <= 0 {
+		this.Ctx.Abort(500, "invalid role id")
 	}
 	this.ServeJson()
 }
@@ -115,8 +115,8 @@ func (this *RoleApiController) Add() {
 	this.CheckPermission(permissions.RoleCreate)
 	var model user.Role
 	json.Unmarshal(this.Ctx.Input.RequestBody, &model)
-    model.Name = strings.Trim(model.Name, " ")
-    this.validate(&model)
+	model.Name = strings.Trim(model.Name, " ")
+	this.validate(&model)
 	err := this.roleService.Insert(&model)
 	if err != nil {
 		this.Ctx.Abort(500, err.Error())
@@ -130,11 +130,11 @@ func (this *RoleApiController) Update() {
 	this.CheckPermission(permissions.RoleUpdate)
 	var model user.Role
 	json.Unmarshal(this.Ctx.Input.RequestBody, &model)
-    model.Name = strings.Trim(model.Name, " ")
-    if model.Id <= 0 {
-        this.Ctx.Abort(500, "invalid role id")
-    }
-    this.validate(&model)
+	model.Name = strings.Trim(model.Name, " ")
+	if model.Id <= 0 {
+		this.Ctx.Abort(500, "invalid role id")
+	}
+	this.validate(&model)
 	err := this.roleService.Update(&model, "Name", "IsSystemRole", "Description")
 	if err != nil {
 		this.Ctx.Abort(500, err.Error())
@@ -143,13 +143,13 @@ func (this *RoleApiController) Update() {
 }
 
 func (this *RoleApiController) validate(role *user.Role) {
-    valid := validation.Validation{}
-    b, _ := valid.Valid(role)
-    if !b {
-        m := ""
-        for _, err := range valid.Errors {
-            m += fmt.Sprintf("%s:%s\n", err.Key, err.Message)
-        }
-        this.Ctx.Abort(500, m)
-    }
+	valid := validation.Validation{}
+	b, _ := valid.Valid(role)
+	if !b {
+		m := ""
+		for _, err := range valid.Errors {
+			m += fmt.Sprintf("%s:%s\n", err.Key, err.Message)
+		}
+		this.Ctx.Abort(500, m)
+	}
 }
