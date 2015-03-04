@@ -27,7 +27,7 @@ CREATE TABLE user_info
   user_type_id bigint,
   lang text NOT NULL DEFAULT 'en-US'::text,
   gravatar_email text,
-  company_name text,
+  company text,
   updated timestamp without time zone NOT NULL DEFAULT timezone('utc'::text, now()),	
   CONSTRAINT user_info_pkey PRIMARY KEY (id),
   CONSTRAINT user_info_user_type_fk FOREIGN KEY (user_type_id)

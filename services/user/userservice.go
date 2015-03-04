@@ -13,6 +13,7 @@ import (
 	"github.com/thanzen/eq/setting"
 	"github.com/thanzen/eq/utils"
 	"strings"
+    "errors"
 )
 
 const USER_ID_CACHE_PATTERN = "eq_user_id_%d_deleted_%t"
@@ -71,6 +72,7 @@ func (this UserService) Query(users *[]*user.User, options SearchOptions) (int64
 	qs.SetCond(cond)
 	return qs.All(users)
 }
+
 func (this UserService) getById(u *user.User) error {
 	var err error
 	cache, hit := cachemanager.Get(fmt.Sprintf(USER_ID_CACHE_PATTERN, u.Id, u.Deleted), func(params ...interface{}) interface{} {
@@ -401,4 +403,17 @@ func (this *UserService) HasPermission(u *user.User, permission string) bool {
         }
     }
     return false;
+}
+
+func (this *UserService) FuzzySearch(users *[]*user.User, text string, offset int64, limit int64) (n int64, err error) {
+    if limit<=0||offset <0 {
+        return 0,errors.New("invalid range")
+    }
+    cond := orm.NewCondition()
+    cond = cond.Or("Username__icontains", text).Or("Email__icontains", text)
+    cond = cond.Or("Firstname__icontains", text).Or("Lastname__icontains",text)
+    cond = cond.Or("Cellphone__icontains",text).Or("Officephone__icontains",text)
+    cond = cond.Or("Company__icontains", text)
+    n, err = this.Queryable().SetCond(cond).Offset(offset).Limit(limit).All(users)
+    return n,err
 }

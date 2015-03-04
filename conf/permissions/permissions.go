@@ -9,3 +9,6 @@ const RoleCreate = "role_create"
 const RoleUpdate = "role_update"
 const RoleDelete = "role_delete"
 const RoleViewAll = "role_view_all"
+
+//User related permission keys
+const UserFuzzSearch = "user_fuzzy_search"

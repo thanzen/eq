@@ -153,3 +153,4 @@ func (this *RoleApiController) validate(role *user.Role) {
 		this.Ctx.Abort(500, m)
 	}
 }
+
