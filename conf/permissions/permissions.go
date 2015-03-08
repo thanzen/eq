@@ -12,3 +12,5 @@ const RoleViewAll = "role_view_all"
 
 //User related permission keys
 const UserFuzzSearch = "user_fuzzy_search"
+const UserAdminUpdate = "user_admin_update"
+const UserResetPassword = "user_admin_reset_password"

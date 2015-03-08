@@ -13,7 +13,6 @@ func initialize() {
 
 }
 func main() {
-	//todo:move to init if we can
 	setting.Initialize()
 	beego.SetLogFuncCall(true)
 	beego.Info("AppPath:", beego.AppPath)

@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -13,7 +14,6 @@ import (
 	"github.com/thanzen/eq/setting"
 	"github.com/thanzen/eq/utils"
 	"strings"
-    "errors"
 )
 
 const USER_ID_CACHE_PATTERN = "eq_user_id_%d_deleted_%t"
@@ -164,7 +164,8 @@ func (this *UserService) RegisterRegularUser(u *user.User, username, email, pass
 func (this *UserService) SaveNewPassword(u *user.User, password string) error {
 	salt := GetUserSalt()
 	u.Password = fmt.Sprintf("%s$%s", salt, utils.EncodePassword(password, salt))
-	_, err := orm.NewOrm().Update(u, "Password", "Rands", "Updated")
+    u.PasswordSalt = salt
+	_, err := orm.NewOrm().Update(u, "Password", "PasswordSalt", "Updated")
 	return err
 }
 
@@ -388,32 +389,43 @@ func (this *UserService) LoadRoles(u *user.User) error {
 
 // HasPermission checks whether the user has the given permission
 func (this *UserService) HasPermission(u *user.User, permission string) bool {
-    if u == nil {
-        return false
-    }
+	if u == nil {
+		return false
+	}
 	err := this.LoadRoles(u)
-    if err!= nil{
-        return false
-    }
-    roleService := RoleService{}
-    allRoles := roleService.GetAllRoles()
-    for _,r := range u.Roles{
-        if roleService.HasPermission(allRoles[r.Id],permission){
-           return true
-        }
-    }
-    return false;
+	if err != nil {
+		return false
+	}
+	roleService := RoleService{}
+	allRoles := roleService.GetAllRoles()
+	for _, r := range u.Roles {
+		if roleService.HasPermission(allRoles[r.Id], permission) {
+			return true
+		}
+	}
+	return false
 }
 
-func (this *UserService) FuzzySearch(users *[]*user.User, text string, offset int64, limit int64) (n int64, err error) {
-    if limit<=0||offset <0 {
-        return 0,errors.New("invalid range")
+func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId int64, offset int64, limit int64) (n int64,err error) {
+	if limit <= 0 || offset < 0 {
+		return 0, errors.New("invalid range")
+	}
+    sql:="SELECT user_info.id, user_name,email,first_name,last_name,cell_phone,office_phone,company,active from user_info"
+	if roleId > 0 {
+        sql+=" INNER JOIN user_role ON user_info.Id = user_role.user_info_id AND user_role.role_id = ?"
+	}
+    sql += " WHERE UPPER(user_name) LIKE UPPER(?) OR UPPER(email) LIKE UPPER(?)"
+    sql +=" OR UPPER(first_name) LIKE UPPER(?) OR UPPER(last_name) LIKE UPPER(?)"
+    sql+=" OR UPPER(cell_phone) LIKE UPPER(?) OR UPPER(office_phone) LIKE UPPER(?)"
+    sql+= " OR UPPER(company) LIKE UPPER(?) ORDER BY id DESC OFFSET ? LIMIT ?"
+    text = "%"+text+"%"
+    if roleId > 0 {
+        n,err =orm.NewOrm().Raw(sql,roleId,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
+    }else {
+        n,err =orm.NewOrm().Raw(sql,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
     }
-    cond := orm.NewCondition()
-    cond = cond.Or("Username__icontains", text).Or("Email__icontains", text)
-    cond = cond.Or("Firstname__icontains", text).Or("Lastname__icontains",text)
-    cond = cond.Or("Cellphone__icontains",text).Or("Officephone__icontains",text)
-    cond = cond.Or("Company__icontains", text)
-    n, err = this.Queryable().SetCond(cond).Offset(offset).Limit(limit).All(users)
-    return n,err
+    if err!=nil{
+        beego.Info(err)
+    }
+	return 0, err
 }

@@ -8,3 +8,7 @@ type Role struct {
 	Users        []*User       `json:"-" orm:"reverse(many)"`
 	Permissions  []*Permission `json:"-" orm:"rel(m2m);rel_table(role_permission)"`
 }
+
+func (u *Role) TableName() string {
+    return "role"
+}

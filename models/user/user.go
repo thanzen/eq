@@ -26,7 +26,7 @@ type User struct {
 	Lang             string    `json:"lang" orm:"column(lang);default(en-US)"`
 	GravatarEmail    string    `json:"-" orm:"column(gravatar_email)"`
 	Updated          time.Time `json:"-" orm:"column(updated);auto_now"`
-	Company      string    `json:"company" orm:"company"`
+	Company          string    `json:"company" orm:"company"`
 	UserType         *UserType `json:"-" orm:"rel(fk);column(user_type_id);default(1)"`
 	Roles            []*Role   `json:"-" orm:"rel(m2m);rel_table(user_role);on_delete(cascade)"`
 	IsSystemAccount  bool      `json:"-" orm:"-"`
