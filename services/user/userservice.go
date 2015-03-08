@@ -407,6 +407,8 @@ func (this *UserService) HasPermission(u *user.User, permission string) bool {
 }
 
 func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId int64, offset int64, limit int64) (n int64,err error) {
+    //todo: evaluate return value n for total number with a extra flag, currently return 0 only, we can
+    // make another query to get total, even using go routine to perform concurrent query
 	if limit <= 0 || offset < 0 {
 		return 0, errors.New("invalid range")
 	}
