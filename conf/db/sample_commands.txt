@@ -1,0 +1,3 @@
+migrate -url postgres://postgres:root@localhost:5432/eq?sslmode=disable -path ./conf/db/migrations up
+migrate -url postgres://postgres:root@localhost:5432/eq?sslmode=disable -path ./conf/db/migrations create init_schema
+migrate -url postgres://postgres:root@localhost:5432/eq?sslmode=disable -path ./conf/db/migrations create init_data

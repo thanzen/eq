@@ -37,7 +37,6 @@ func main() {
 
 	controllers.RegisterControllers()
 
-
 	//beego.Router("/user", uctr, "get:GetOne")
 	//beego.BeeLogger.DelLogger("console")
 	//beego.SetLevel(beego.LevelInformational)
