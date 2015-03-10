@@ -46,16 +46,19 @@ var (
 )
 
 var (
-	AppHost             string
-	AppUrl              string
-	AppLogo             string
-	EnforceRedirect     bool
-	IsProMode           bool
-	AppVer              string
-	DateFormat          string
-	DateTimeFormat      string
-	DateTimeShortFormat string
-	SecretKey           string
+	AppHost                   string
+	AppUrl                    string
+	AppLogo                   string
+	EnforceRedirect           bool
+	IsProMode                 bool
+	AppVer                    string
+	DateFormat                string
+	DateTimeFormat            string
+	DateTimeShortFormat       string
+	SecretKey                 string
+	PostgresConnection        string
+	PostgresMigrateConnection string
+
 	//password
 	ActiveCodeLives   int
 	ResetPwdCodeLives int
@@ -99,7 +102,9 @@ func Initialize() {
 	//beego.SessionGCMaxLifetime = Cfg.MustInt64("session", "session_gc_time", 86400)
 	//load custom configurations
 	loadConfig()
-
+	//disable live reload for db connections
+	PostgresConnection = beego.AppConfig.DefaultString(beego.RunMode+"::"+"pg_conn", "user=postgres password=root dbname=eq sslmode=disable")
+    PostgresMigrateConnection =  beego.AppConfig.DefaultString(beego.RunMode+"::"+"pg_migrate", "postgres://postgres:root@localhost:5432/test?sslmode=disable")
 	// cache system
 
 	Captcha = captcha.NewCaptcha("/captcha/", cac)
@@ -133,16 +138,16 @@ func settingCompress() {
 }
 
 func loadConfig() {
-    AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
+	AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
 	IsProMode = beego.RunMode == "pro"
 
 	CacheTime = beego.AppConfig.DefaultInt64("cache_time", 300)
 	cachemanager.ExpireTime = CacheTime
 	AppHost = beego.HttpAddr + ":" + strconv.Itoa(beego.HttpPort)
-//	AppUrl = beego.AppConfig.DefaultString("app_url", "http://localhost:8080/")
-    AppUrl = "http://"+ AppHost+"/"
-    beego.Info(AppUrl)
+	//	AppUrl = beego.AppConfig.DefaultString("app_url", "http://localhost:8080/")
+	AppUrl = "http://" + AppHost + "/"
+	beego.Info(PostgresConnection)
 	EnforceRedirect = beego.AppConfig.DefaultBool("enforce_redirect", false)
 	AppLogo = beego.AppConfig.DefaultString("app_logo", "/static/img/logo.gif")
 	//todo change later
@@ -260,7 +265,7 @@ func checkEventTime(name string) bool {
 	return false
 }
 
-// getFileModTime retuens unix timestamp of `os.File.ModTime` by given path.
+// getFileModTime returns unix timestamp of `os.File.ModTime` by given path.
 func getFileModTime(path string) int64 {
 	path = strings.Replace(path, "\\", "/", -1)
 	f, err := os.Open(path)
@@ -292,6 +297,5 @@ func IsMatchHost(uri string) bool {
 	if u.Host != beego.AppPath {
 		return false
 	}
-
 	return true
 }

@@ -24,7 +24,7 @@ func (this *AdminApiController) GetUsers() {
 	if err != nil || offset < 0 {
 		this.Ctx.Abort(500, "invalid role id")
 	}
-	offset, err = this.GetInt64("offset")
+	offset, err = this.GetInt64(":offset")
 	if err != nil || offset < 0 {
 		this.Ctx.Abort(500, "invalid offset")
 	}
