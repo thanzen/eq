@@ -427,7 +427,6 @@ func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId in
         n,err =orm.NewOrm().Raw(sql,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
     }
     if err!=nil{
-        beego.Info(sql)
         beego.Info(err)
     }
 	return 0, err
