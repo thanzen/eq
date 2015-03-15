@@ -80,6 +80,10 @@ func TestPasswordSpec(t *testing.T) {
                 So(canName,ShouldEqual,true)
                 So(canEmail,ShouldEqual,true)
             })
+
+            Convey("HasUser()",func(){
+                So(userServ.HasUser(u,"testuser"),ShouldEqual,true)
+            })
 		})
 
 	})
