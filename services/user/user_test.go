@@ -84,6 +84,13 @@ func TestPasswordSpec(t *testing.T) {
             Convey("HasUser()",func(){
                 So(userServ.HasUser(u,"testuser"),ShouldEqual,true)
             })
+
+            Convey("SaveNewPassword()",func(){
+                newPassword := "this is new pass!"
+                userServ.SaveNewPassword(u,newPassword)
+                So(userServ.VerifyUser(u,u.Username,password),ShouldEqual,false)
+                So(userServ.VerifyUser(u,u.Username,newPassword),ShouldEqual,true)
+            })
 		})
 
 	})
