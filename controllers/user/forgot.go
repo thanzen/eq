@@ -90,7 +90,7 @@ func (this *ForgotController) ResetPost() {
 		}
 
 		if this.IsLogin {
-			this.UserService.LogoutUser(this.Ctx)
+			this.LogoutUser(this.Ctx)
 		}
 
 		this.FlashRedirect("/login", 302, "ResetSuccess")

@@ -17,6 +17,8 @@ import (
 	userServ "github.com/thanzen/eq/services/user"
 	"github.com/thanzen/eq/setting"
 	"github.com/thanzen/eq/utils"
+    "github.com/astaxie/beego/session"
+    "github.com/astaxie/beego/context"
 )
 
 type NestPreparer interface {
@@ -62,10 +64,10 @@ func (this *BaseController) Prepare() {
 
 	switch {
 	// save logined user if exist in session
-	case this.UserService.GetUserFromSession(&this.User, this.CruSession):
+	case this.GetUserFromSession(&this.User, this.CruSession):
 		this.IsLogin = true
 	// save logined user if exist in remember cookie
-	case this.UserService.LoginUserFromRememberCookie(&this.User, this.Ctx):
+	case this.LoginUserFromRememberCookie(&this.User, this.Ctx):
 		this.IsLogin = true
 		//todo: add token based(oauth2) authentication user retrive
 	}
@@ -77,7 +79,7 @@ func (this *BaseController) Prepare() {
 
 		// if user forbided then do logout
 		if !this.User.Active || this.User.Deleted {
-			this.UserService.LogoutUser(this.Ctx)
+			this.LogoutUser(this.Ctx)
 			this.FlashRedirect("/login", 302, "UserForbid")
 			return
 		}
@@ -130,7 +132,7 @@ func (this *BaseController) LoginUser(u *user.User, remember bool) string {
 	}
 
 	// login user
-	this.UserService.LoginUser(u, this.Ctx, remember)
+	this.LoginUserRememberCookie(u, this.Ctx, remember)
 
 	//todo: add locale support, rewrite i18n.go
 	this.setLangCookie(u.Lang)
@@ -542,4 +544,93 @@ func (this *BaseController) AuthCheck(isRedirect bool) {
     if this.IsLogin && isRedirect {
         this.Redirect(beego.HttpAddr, 401)
     }
+}
+
+// get login redirect url from cookie
+func (this *BaseController) GetLoginRedirect(ctx *context.Context) string {
+    loginRedirect := strings.TrimSpace(ctx.GetCookie("login_to"))
+    if utils.IsMatchHost(loginRedirect) == false {
+        loginRedirect = "/"
+    } else {
+        ctx.SetCookie("login_to", "", -1, "/")
+    }
+    return loginRedirect
+}
+
+// login user
+//todo: added token (oauth2) session if it is rest api call
+func (this *BaseController) LoginUserRememberCookie(u *user.User, ctx *context.Context, remember bool) {
+    // werid way of beego session regenerate id...
+    ctx.Input.CruSession.SessionRelease(ctx.ResponseWriter)
+    ctx.Input.CruSession = beego.GlobalSessions.SessionRegenerateId(ctx.ResponseWriter, ctx.Request)
+    ctx.Input.CruSession.Set("auth_user_id", u.Id)
+
+    if remember {
+        this.WriteRememberCookie(u, ctx)
+    }
+}
+func (this *BaseController) WriteRememberCookie(u *user.User, ctx *context.Context) {
+    secret := utils.EncodeMd5(u.PasswordSalt + u.Password)
+    days := 86400 * setting.LoginRememberDays
+    ctx.SetCookie(setting.CookieUsername, u.Username, days)
+    ctx.SetSecureCookie(secret, setting.CookieRememberName, u.Username, days)
+}
+func (this *BaseController) DeleteRememberCookie(ctx *context.Context) {
+    ctx.SetCookie(setting.CookieUsername, "", -1)
+    ctx.SetCookie(setting.CookieRememberName, "", -1)
+}
+
+func (this *BaseController) LoginUserFromRememberCookie(u *user.User, ctx *context.Context) (success bool) {
+    userName := ctx.GetCookie(setting.CookieUsername)
+    if len(userName) == 0 {
+        return false
+    }
+
+    defer func() {
+        if !success {
+            this.DeleteRememberCookie(ctx)
+        }
+    }()
+    u.Username = userName
+    if err := this.UserService.Read(u, "Username"); err != nil {
+        return false
+    }
+
+    secret := utils.EncodeMd5(u.PasswordSalt + u.Password)
+    value, _ := ctx.GetSecureCookie(secret, setting.CookieRememberName)
+    if value != userName {
+        return false
+    }
+
+    this.LoginUserRememberCookie(u, ctx, true)
+
+    return true
+}
+
+// logout user
+func (this *BaseController) LogoutUser(ctx *context.Context) {
+    this.DeleteRememberCookie(ctx)
+    ctx.Input.CruSession.Delete("auth_user_id")
+    ctx.Input.CruSession.Flush()
+    beego.GlobalSessions.SessionDestroy(ctx.ResponseWriter, ctx.Request)
+}
+
+func (this *BaseController) GetUserIdFromSession(sess session.SessionStore) int64 {
+    if id, ok := sess.Get("auth_user_id").(int64); ok && id > 0 {
+        return id
+    }
+    return 0
+}
+
+// get user if key exist in session
+func (this *BaseController) GetUserFromSession(u *user.User, sess session.SessionStore) bool {
+    id := this.GetUserIdFromSession(sess)
+    if id > 0 {
+        u.Id = id
+        if this.UserService.Read(u) == nil {
+            return true
+        }
+    }
+
+    return false
 }

@@ -103,7 +103,7 @@ ajaxError:
 
 // Logout implemented user logout page.
 func (this *AuthController) Logout() {
-	this.UserService.LogoutUser(this.Ctx)
+	this.LogoutUser(this.Ctx)
 
 	// write flash message
 	this.FlashWrite("HasLogout", "true")
