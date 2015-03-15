@@ -85,30 +85,31 @@ func (this UserService) getById(u *user.User) error {
 	return err
 }
 
-func (this *UserService) CanRegistered(userName string, email string) (bool, bool, error) {
+func (this *UserService) CanRegistered(userName string, email string) (canName bool, canEmail bool, err error) {
 	cond := orm.NewCondition()
 	cond = cond.Or("Username", userName).Or("email", email)
 	var maps []orm.Params
-	n, err := this.Queryable().SetCond(cond).Values(&maps, "Username", "email")
+    var n int64
+	n, err = this.Queryable().SetCond(cond).Values(&maps, "Username", "email")
 	if err != nil {
 		return false, false, err
 	}
 
-	e1 := true
-	e2 := true
+    canName = true
+    canEmail = true
 
 	if n > 0 {
 		for _, m := range maps {
-			if e1 && orm.ToStr(m["Username"]) == userName {
-				e1 = false
+			if canName && orm.ToStr(m["Username"]) == userName {
+                canName = false
 			}
-			if e2 && orm.ToStr(m["Email"]) == email {
-				e2 = false
+			if canEmail && orm.ToStr(m["Email"]) == email {
+                canEmail = false
 			}
 		}
 	}
 
-	return e1, e2, nil
+	return canName, canEmail, nil
 }
 
 // check if exist user by username or email, ignore "deleted" users

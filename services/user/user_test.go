@@ -64,7 +64,22 @@ func TestPasswordSpec(t *testing.T) {
 			Convey("VerifyUser()", func() {
                So(userServ.VerifyUser(u,u.Username,password),ShouldEqual,true)
 			})
-            
+
+            Convey("CanRegister()",func(){
+                var canName, canEmail bool = true,true
+                canName, canEmail,_= userServ.CanRegistered("testuser","test@test.com")
+                So(canName,ShouldEqual,false)
+                So(canEmail,ShouldEqual,false)
+                canName, canEmail,_ =userServ.CanRegistered("testuser","test@whatever.com")
+                So(canName,ShouldEqual,false)
+                So(canEmail,ShouldEqual,true)
+                canName, canEmail,_=userServ.CanRegistered("whatever","test@test.com")
+                So(canName,ShouldEqual,true)
+                So(canEmail,ShouldEqual,false)
+                canName, canEmail,_=userServ.CanRegistered("whatever","test@whatever.com")
+                So(canName,ShouldEqual,true)
+                So(canEmail,ShouldEqual,true)
+            })
 		})
 
 	})
