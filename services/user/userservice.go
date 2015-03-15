@@ -132,7 +132,8 @@ func (this *UserService) HasUser(user *user.User, username string) bool {
 
 // register a regular user user
 //todo: refactor this method later to enable register different type users(UserType and Role are different)
-func (this *UserService) RegisterRegularUser(u *user.User, username, email, password string) error {
+func (this *UserService) RegisterUser(u *user.User, username, email, password string, userType *user.UserType,role *user.Role) error {
+	u.UserType = userType
 	// use random salt encode password
 	salt := GetUserSalt()
 	pwd := utils.EncodePassword(password, salt)
@@ -149,8 +150,7 @@ func (this *UserService) RegisterRegularUser(u *user.User, username, email, pass
 	tr.Begin()
 	if err = this.InsertWithScope(tr, u); err == nil {
 		roleService := RoleService{}
-		r := &user.Role{Id: 1}
-		err = roleService.InsertUsersWithScope(tr, r, u)
+		err = roleService.InsertUsersWithScope(tr, role, u)
 	}
 	if err == nil {
 		tr.Commit()

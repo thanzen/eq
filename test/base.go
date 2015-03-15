@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+    "github.com/astaxie/beego/orm"
+    "github.com/thanzen/eq/services"
 )
 
 func TestInitializeTestingDatabase(path string) {
@@ -16,6 +18,11 @@ func TestInitializeTestingDatabase(path string) {
 			fmt.Println(err)
 		}
 	}
+}
+func TestInitOrm(){
+    orm.RegisterDriver("postgres", orm.DR_Postgres)
+    orm.RegisterDataBase("default", "postgres", "user=postgres password=root dbname=eqtest sslmode=disable")
+    services.Register()
 }
 func getMigrationFolder() string {
 	path, _ := filepath.Abs(os.Args[0])
@@ -35,4 +42,5 @@ func getMigrationFolder() string {
 }
 func init() {
 	TestInitializeTestingDatabase(getMigrationFolder())
+    TestInitOrm()
 }

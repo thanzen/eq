@@ -48,9 +48,11 @@ func (this *RegisterController) Register() {
 	//set to default usertype
 	ut := new(user.UserType)
 	ut.Id = 1
-	u.UserType = ut
 
-	if err := this.UserService.RegisterRegularUser(u, form.Username, form.Email, form.Password); err == nil {
+	role := new(user.Role)
+	role.Id = 1
+
+	if err := this.UserService.RegisterUser(u, form.Username, form.Email, form.Password, ut, role); err == nil {
 		email.SendRegisterMail(this.Locale, u)
 
 		loginRedirect := this.LoginUser(u, false)
