@@ -13,16 +13,7 @@ import (
 
 var userServ UserService = UserService{}
 
-func TestUserSearchSpec(t *testing.T) {
-	us := UserService{}
-	var users []*model.User
-	us.FuzzySearch(&users, "t", 2, 0, 200)
 
-	// Only pass t into top-level Convey calls
-	Convey("Given some integer with a starting value", t, func() {
-		So(len(users), ShouldBeGreaterThan, 0)
-	})
-}
 
 func TestPasswordSpec(t *testing.T) {
 	password := "abcDefg01!"
@@ -90,6 +81,12 @@ func TestPasswordSpec(t *testing.T) {
                 userServ.SaveNewPassword(u,newPassword)
                 So(userServ.VerifyUser(u,u.Username,password),ShouldEqual,false)
                 So(userServ.VerifyUser(u,u.Username,newPassword),ShouldEqual,true)
+            })
+
+            Convey("FuzzySearch()", func() {
+                var users []*model.User
+                userServ.FuzzySearch(&users, "t", 2, 0, 200)
+                So(len(users),ShouldBeGreaterThanOrEqualTo, 1)
             })
 		})
 
