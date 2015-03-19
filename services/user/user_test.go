@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/astaxie/beego/orm"
-	//	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/thanzen/eq/models/user"
 	model "github.com/thanzen/eq/models/user"
