@@ -33,5 +33,6 @@ tmp
 upload
 static/css
 static/js
+static/node_modules
 vwd.webinfo
 *.rej
