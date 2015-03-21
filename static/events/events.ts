@@ -32,7 +32,6 @@ export class EventEmitter {
 
 export module PubSub {
     var registry: IDictionary = {}
-    
         
     export var Pub = function (name: string, ...args: any[]) {
         if (!registry[name]) return;
@@ -48,4 +47,4 @@ export module PubSub {
             registry[name].push(fn);
         }
     }
-    }
+}
