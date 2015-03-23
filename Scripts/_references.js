@@ -43,3 +43,5 @@
 /// <reference path="modules/admin/models/permission.js" />
 /// <reference path="modules/admin/models/role.js" />
 /// <reference path="modules/admin/stores/roleStore.js" />
+/// <reference path="modules/admin/eventType.js" />
+/// <reference path="modules/admin/services/admin.js" />
