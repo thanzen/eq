@@ -40,3 +40,6 @@
 /// <reference path="libs/flux.js" />
 /// <reference path="libs/react.jsx.transformer.js" />
 /// <reference path="libs/react.min.js" />
+/// <reference path="modules/admin/models/permission.js" />
+/// <reference path="modules/admin/models/role.js" />
+/// <reference path="modules/admin/stores/roleStore.js" />
