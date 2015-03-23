@@ -36,3 +36,4 @@ static/js
 static/node_modules
 vwd.webinfo
 *.rej
+Scripts/node_modules
