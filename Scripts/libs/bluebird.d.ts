@@ -1,317 +1,715 @@
-﻿// Type definitions for Q
-// Project: https://github.com/kriskowal/q
-// Definitions by: Barrie Nemetchek <https://github.com/bnemetchek>, Andrew Gaspar <https://github.com/AndrewGaspar/>, John Reilly <https://github.com/johnnyreilly>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped  
+﻿// Type definitions for bluebird 2.0.0
+// Project: https://github.com/petkaantonov/bluebird
+// Definitions by: Bart van der Schoor <https://github.com/Bartvds>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/**
- * If value is a Q promise, returns the promise.
- * If value is a promise from another library it is coerced into a Q promise (where possible).
- */
-declare function Q<T>(promise: Q.IPromise<T>): Q.Promise<T>;
-/**
- * If value is not a promise, returns a promise that is fulfilled with value.
- */
-declare function Q<T>(value: T): Q.Promise<T>;
+// ES6 model with generics overload was sourced and trans-multiplied from es6-promises.d.ts
+// By: Campredon <https://github.com/fdecampredon/>
 
-declare module Q {
-    interface IPromise<T> {
-        then<U>(onFulfill?: (value: T) => U | IPromise<U>, onReject?: (error: any) => U | IPromise<U>): IPromise<U>;
+// Warning: recommended to use `tsc > v0.9.7` (critical bugs in earlier generic code):
+// - https://github.com/borisyankov/DefinitelyTyped/issues/1563
+
+// Note: replicate changes to all overloads in both definition and test file
+// Note: keep both static and instance members inline (so similar)
+
+// TODO fix remaining TODO annotations in both definition and test
+
+// TODO verify support to have no return statement in handlers to get a Promise<void> (more overloads?)
+
+declare class Promise<R> implements Promise.Thenable<R>, Promise.Inspection<R> {
+    /**
+     * Create a new promise. The passed in function will receive functions `resolve` and `reject` as its arguments which can be called to seal the fate of the created promise.
+     */
+    constructor(callback: (resolve: (thenable: Promise.Thenable<R>) => void, reject: (error: any) => void) => void);
+    constructor(callback: (resolve: (result: R) => void, reject: (error: any) => void) => void);
+
+    /**
+     * Promises/A+ `.then()` with progress handler. Returns a new promise chained from this promise. The new promise will be rejected or resolved dedefer on the passed `fulfilledHandler`, `rejectedHandler` and the state of this promise.
+     */
+    then<U>(onFulfill: (value: R) => Promise.Thenable<U>, onReject: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): Promise<U>;
+    then<U>(onFulfill: (value: R) => Promise.Thenable<U>, onReject?: (error: any) => U, onProgress?: (note: any) => any): Promise<U>;
+    then<U>(onFulfill: (value: R) => U, onReject: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): Promise<U>;
+    then<U>(onFulfill?: (value: R) => U, onReject?: (error: any) => U, onProgress?: (note: any) => any): Promise<U>;
+
+    /**
+     * This is a catch-all exception handler, shortcut for calling `.then(null, handler)` on this promise. Any exception happening in a `.then`-chain will propagate to nearest `.catch` handler.
+     *
+     * Alias `.caught();` for compatibility with earlier ECMAScript version.
+     */
+    catch<U>(onReject?: (error: any) => Promise.Thenable<U>): Promise<U>;
+    caught<U>(onReject?: (error: any) => Promise.Thenable<U>): Promise<U>;
+
+    catch<U>(onReject?: (error: any) => U): Promise<U>;
+    caught<U>(onReject?: (error: any) => U): Promise<U>;
+
+    /**
+     * This extends `.catch` to work more like catch-clauses in languages like Java or C#. Instead of manually checking `instanceof` or `.name === "SomeError"`, you may specify a number of error constructors which are eligible for this catch handler. The catch handler that is first met that has eligible constructors specified, is the one that will be called.
+     *
+     * This method also supports predicate-based filters. If you pass a predicate function instead of an error constructor, the predicate will receive the error as an argument. The return result of the predicate will be used determine whether the error handler should be called.
+     *
+     * Alias `.caught();` for compatibility with earlier ECMAScript version.
+     */
+    catch<U>(predicate: (error: any) => boolean, onReject: (error: any) => Promise.Thenable<U>): Promise<U>;
+    caught<U>(predicate: (error: any) => boolean, onReject: (error: any) => Promise.Thenable<U>): Promise<U>;
+
+    catch<U>(predicate: (error: any) => boolean, onReject: (error: any) => U): Promise<U>;
+    caught<U>(predicate: (error: any) => boolean, onReject: (error: any) => U): Promise<U>;
+
+    catch<U>(ErrorClass: Function, onReject: (error: any) => Promise.Thenable<U>): Promise<U>;
+    caught<U>(ErrorClass: Function, onReject: (error: any) => Promise.Thenable<U>): Promise<U>;
+
+    catch<U>(ErrorClass: Function, onReject: (error: any) => U): Promise<U>;
+    caught<U>(ErrorClass: Function, onReject: (error: any) => U): Promise<U>;
+
+    /**
+     * Like `.catch` but instead of catching all types of exceptions, it only catches those that don't originate from thrown errors but rather from explicit rejections.
+     */
+    error<U>(onReject: (reason: any) => Promise.Thenable<U>): Promise<U>;
+    error<U>(onReject: (reason: any) => U): Promise<U>;
+
+    /**
+     * Pass a handler that will be called regardless of this promise's fate. Returns a new promise chained from this promise. There are special semantics for `.finally()` in that the final value cannot be modified from the handler.
+     *
+     * Alias `.lastly();` for compatibility with earlier ECMAScript version.
+     */
+    finally<U>(handler: () => Promise.Thenable<U>): Promise<R>;
+    finally<U>(handler: () => U): Promise<R>;
+
+    lastly<U>(handler: () => Promise.Thenable<U>): Promise<R>;
+    lastly<U>(handler: () => U): Promise<R>;
+
+    /**
+     * Create a promise that follows this promise, but is bound to the given `thisArg` value. A bound promise will call its handlers with the bound value set to `this`. Additionally promises derived from a bound promise will also be bound promises with the same `thisArg` binding as the original promise.
+     */
+    bind(thisArg: any): Promise<R>;
+
+    /**
+     * Like `.then()`, but any unhandled rejection that ends up here will be thrown as an error.
+     */
+    done<U>(onFulfilled: (value: R) => Promise.Thenable<U>, onRejected: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): void;
+    done<U>(onFulfilled: (value: R) => Promise.Thenable<U>, onRejected?: (error: any) => U, onProgress?: (note: any) => any): void;
+    done<U>(onFulfilled: (value: R) => U, onRejected: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): void;
+    done<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U, onProgress?: (note: any) => any): void;
+
+    /**
+     * Like `.finally()`, but not called for rejections.
+     */
+    tap<U>(onFulFill: (value: R) => Promise.Thenable<U>): Promise<R>;
+    tap<U>(onFulfill: (value: R) => U): Promise<R>;
+
+    /**
+     * Shorthand for `.then(null, null, handler);`. Attach a progress handler that will be called if this promise is progressed. Returns a new promise chained from this promise.
+     */
+    progressed(handler: (note: any) => any): Promise<R>;
+
+    /**
+     * Same as calling `Promise.delay(this, ms)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    delay(ms: number): Promise<R>;
+
+    /**
+     * Returns a promise that will be fulfilled with this promise's fulfillment value or rejection reason. However, if this promise is not fulfilled or rejected within `ms` milliseconds, the returned promise is rejected with a `Promise.TimeoutError` instance.
+     *
+     * You may specify a custom error message with the `message` parameter.
+     */
+    timeout(ms: number, message?: string): Promise<R>;
+
+    /**
+     * Register a node-style callback on this promise. When this promise is is either fulfilled or rejected, the node callback will be called back with the node.js convention where error reason is the first argument and success value is the second argument. The error argument will be `null` in case of success.
+     * Returns back this promise instead of creating a new one. If the `callback` argument is not a function, this method does not do anything.
+     */
+    nodeify(callback: (err: any, value?: R) => void): Promise<R>;
+    nodeify(...sink: any[]): void;
+
+    /**
+     * Marks this promise as cancellable. Promises by default are not cancellable after v0.11 and must be marked as such for `.cancel()` to have any effect. Marking a promise as cancellable is infectious and you don't need to remark any descendant promise.
+     */
+    cancellable(): Promise<R>;
+
+    /**
+     * Cancel this promise. The cancellation will propagate to farthest cancellable ancestor promise which is still pending.
+     *
+     * That ancestor will then be rejected with a `CancellationError` (get a reference from `Promise.CancellationError`) object as the rejection reason.
+     *
+     * In a promise rejection handler you may check for a cancellation by seeing if the reason object has `.name === "Cancel"`.
+     *
+     * Promises are by default not cancellable. Use `.cancellable()` to mark a promise as cancellable.
+     */
+    // TODO what to do with this?
+    cancel<U>(): Promise<U>;
+
+    /**
+     * Like `.then()`, but cancellation of the the returned promise or any of its descendant will not propagate cancellation to this promise or this promise's ancestors.
+     */
+    fork<U>(onFulfilled: (value: R) => Promise.Thenable<U>, onRejected: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): Promise<U>;
+    fork<U>(onFulfilled: (value: R) => Promise.Thenable<U>, onRejected?: (error: any) => U, onProgress?: (note: any) => any): Promise<U>;
+    fork<U>(onFulfilled: (value: R) => U, onRejected: (error: any) => Promise.Thenable<U>, onProgress?: (note: any) => any): Promise<U>;
+    fork<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U, onProgress?: (note: any) => any): Promise<U>;
+
+    /**
+     * Create an uncancellable promise based on this promise.
+     */
+    uncancellable(): Promise<R>;
+
+    /**
+     * See if this promise can be cancelled.
+     */
+    isCancellable(): boolean;
+
+    /**
+     * See if this `promise` has been fulfilled.
+     */
+    isFulfilled(): boolean;
+
+    /**
+     * See if this `promise` has been rejected.
+     */
+    isRejected(): boolean;
+
+    /**
+     * See if this `promise` is still defer.
+     */
+    isPending(): boolean;
+
+    /**
+     * See if this `promise` is resolved -> either fulfilled or rejected.
+     */
+    isResolved(): boolean;
+
+    /**
+     * Get the fulfillment value of the underlying promise. Throws if the promise isn't fulfilled yet.
+     *
+     * throws `TypeError`
+     */
+    value(): R;
+
+    /**
+     * Get the rejection reason for the underlying promise. Throws if the promise isn't rejected yet.
+     *
+     * throws `TypeError`
+     */
+    reason(): any;
+
+    /**
+     * Synchronously inspect the state of this `promise`. The `PromiseInspection` will represent the state of the promise as snapshotted at the time of calling `.inspect()`.
+     */
+    inspect(): Promise.Inspection<R>;
+
+    /**
+     * This is a convenience method for doing:
+     *
+     * <code>
+     * promise.then(function(obj){
+    *     return obj[propertyName].call(obj, arg...);
+    * });
+     * </code>
+     */
+    call(propertyName: string, ...args: any[]): Promise<any>;
+
+    /**
+     * This is a convenience method for doing:
+     *
+     * <code>
+     * promise.then(function(obj){
+    *     return obj[propertyName];
+    * });
+     * </code>
+     */
+    // TODO find way to fix get()
+    // get<U>(propertyName: string): Promise<U>;
+
+    /**
+     * Convenience method for:
+     *
+     * <code>
+     * .then(function() {
+    *    return value;
+    * });
+     * </code>
+     *
+     * in the case where `value` doesn't change its value. That means `value` is bound at the time of calling `.return()`
+     *
+     * Alias `.thenReturn();` for compatibility with earlier ECMAScript version.
+     */
+    return(): Promise<any>;
+    thenReturn(): Promise<any>;
+    return<U>(value: U): Promise<U>;
+    thenReturn<U>(value: U): Promise<U>;
+
+    /**
+     * Convenience method for:
+     *
+     * <code>
+     * .then(function() {
+    *    throw reason;
+    * });
+     * </code>
+     * Same limitations apply as with `.return()`.
+     *
+     * Alias `.thenThrow();` for compatibility with earlier ECMAScript version.
+     */
+    throw(reason: Error): Promise<R>;
+    thenThrow(reason: Error): Promise<R>;
+
+    /**
+     * Convert to String.
+     */
+    toString(): string;
+
+    /**
+     * This is implicitly called by `JSON.stringify` when serializing the object. Returns a serialized representation of the `Promise`.
+     */
+    toJSON(): Object;
+
+    /**
+     * Like calling `.then`, but the fulfillment value or rejection reason is assumed to be an array, which is flattened to the formal parameters of the handlers.
+     */
+    // TODO how to model instance.spread()? like Q?
+    spread<U>(onFulfill: Function, onReject?: (reason: any) => Promise.Thenable<U>): Promise<U>;
+    spread<U>(onFulfill: Function, onReject?: (reason: any) => U): Promise<U>;
+    /*
+     // TODO or something like this?
+     spread<U, W>(onFulfill: (...values: W[]) => Promise.Thenable<U>, onReject?: (reason: any) => Promise.Thenable<U>): Promise<U>;
+     spread<U, W>(onFulfill: (...values: W[]) => Promise.Thenable<U>, onReject?: (reason: any) => U): Promise<U>;
+     spread<U, W>(onFulfill: (...values: W[]) => U, onReject?: (reason: any) => Promise.Thenable<U>): Promise<U>;
+     spread<U, W>(onFulfill: (...values: W[]) => U, onReject?: (reason: any) => U): Promise<U>;
+     */
+    /**
+     * Same as calling `Promise.all(thisPromise)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    all<U>(): Promise<U[]>;
+
+    /**
+     * Same as calling `Promise.props(thisPromise)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO how to model instance.props()?
+    props(): Promise<Object>;
+
+    /**
+     * Same as calling `Promise.settle(thisPromise)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    settle<U>(): Promise<Promise.Inspection<U>[]>;
+
+    /**
+     * Same as calling `Promise.any(thisPromise)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    any<U>(): Promise<U>;
+
+    /**
+     * Same as calling `Promise.some(thisPromise)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    some<U>(count: number): Promise<U[]>;
+
+    /**
+     * Same as calling `Promise.race(thisPromise, count)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    race<U>(): Promise<U>;
+
+    /**
+     * Same as calling `Promise.map(thisPromise, mapper)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    map<Q, U>(mapper: (item: Q, index: number, arrayLength: number) => Promise.Thenable<U>): Promise<U[]>;
+    map<Q, U>(mapper: (item: Q, index: number, arrayLength: number) => U): Promise<U[]>;
+
+    /**
+     * Same as calling `Promise.reduce(thisPromise, Function reducer, initialValue)`. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    reduce<Q, U>(reducer: (memo: U, item: Q, index: number, arrayLength: number) => Promise.Thenable<U>, initialValue?: U): Promise<U>;
+    reduce<Q, U>(reducer: (memo: U, item: Q, index: number, arrayLength: number) => U, initialValue?: U): Promise<U>;
+
+    /**
+     * Same as calling ``Promise.filter(thisPromise, filterer)``. With the exception that if this promise is bound to a value, the returned promise is bound to that value too.
+     */
+    // TODO type inference from array-resolving promise?
+    filter<U>(filterer: (item: U, index: number, arrayLength: number) => Promise.Thenable<boolean>): Promise<U[]>;
+    filter<U>(filterer: (item: U, index: number, arrayLength: number) => boolean): Promise<U[]>;
+
+    /**
+     * Start the chain of promises with `Promise.try`. Any synchronous exceptions will be turned into rejections on the returned promise.
+     *
+     * Note about second argument: if it's specifically a true array, its values become respective arguments for the function call. Otherwise it is passed as is as the first argument for the function call.
+     *
+     * Alias for `attempt();` for compatibility with earlier ECMAScript version.
+     */
+    static try<R>(fn: () => Promise.Thenable<R>, args?: any[], ctx?: any): Promise<R>;
+    static try<R>(fn: () => R, args?: any[], ctx?: any): Promise<R>;
+
+    static attempt<R>(fn: () => Promise.Thenable<R>, args?: any[], ctx?: any): Promise<R>;
+    static attempt<R>(fn: () => R, args?: any[], ctx?: any): Promise<R>;
+
+    /**
+     * Returns a new function that wraps the given function `fn`. The new function will always return a promise that is fulfilled with the original functions return values or rejected with thrown exceptions from the original function.
+     * This method is convenient when a function can sometimes return synchronously or throw synchronously.
+     */
+    static method(fn: Function): Function;
+
+    /**
+     * Create a promise that is resolved with the given `value`. If `value` is a thenable or promise, the returned promise will assume its state.
+     */
+    static resolve(): Promise<void>;
+    static resolve<R>(value: Promise.Thenable<R>): Promise<R>;
+    static resolve<R>(value: R): Promise<R>;
+
+    /**
+     * Create a promise that is rejected with the given `reason`.
+     */
+    static reject(reason: any): Promise<any>;
+    static reject<R>(reason: any): Promise<R>;
+
+    /**
+     * Create a promise with undecided fate and return a `PromiseResolver` to control it. See resolution?: Promise(#promise-resolution).
+     */
+    static defer<R>(): Promise.Resolver<R>;
+
+    /**
+     * Cast the given `value` to a trusted promise. If `value` is already a trusted `Promise`, it is returned as is. If `value` is not a thenable, a fulfilled is: Promise returned with `value` as its fulfillment value. If `value` is a thenable (Promise-like object, like those returned by jQuery's `$.ajax`), returns a trusted that: Promise assimilates the state of the thenable.
+     */
+    static cast<R>(value: Promise.Thenable<R>): Promise<R>;
+    static cast<R>(value: R): Promise<R>;
+
+    /**
+     * Sugar for `Promise.resolve(undefined).bind(thisArg);`. See `.bind()`.
+     */
+    static bind(thisArg: any): Promise<void>;
+
+    /**
+     * See if `value` is a trusted Promise.
+     */
+    static is(value: any): boolean;
+
+    /**
+     * Call this right after the library is loaded to enabled long stack traces. Long stack traces cannot be disabled after being enabled, and cannot be enabled after promises have alread been created. Long stack traces imply a substantial performance penalty, around 4-5x for throughput and 0.5x for latency.
+     */
+    static longStackTraces(): void;
+
+    /**
+     * Returns a promise that will be fulfilled with `value` (or `undefined`) after given `ms` milliseconds. If `value` is a promise, the delay will start counting down when it is fulfilled and the returned promise will be fulfilled with the fulfillment value of the `value` promise.
+     */
+    // TODO enable more overloads
+    static delay<R>(value: Promise.Thenable<R>, ms: number): Promise<R>;
+    static delay<R>(value: R, ms: number): Promise<R>;
+    static delay(ms: number): Promise<void>;
+
+    /**
+     * Returns a function that will wrap the given `nodeFunction`. Instead of taking a callback, the returned function will return a promise whose fate is decided by the callback behavior of the given node function. The node function should conform to node.js convention of accepting a callback as last argument and calling that callback with error as the first argument and success value on the second argument.
+     *
+     * If the `nodeFunction` calls its callback with multiple success values, the fulfillment value will be an array of them.
+     *
+     * If you pass a `receiver`, the `nodeFunction` will be called as a method on the `receiver`.
+     */
+    static promisify<T>(func: (callback: (err: any, result: T) => void) => void, receiver?: any): () => Promise<T>;
+    static promisify<T, A1>(func: (arg1: A1, callback: (err: any, result: T) => void) => void, receiver?: any): (arg1: A1) => Promise<T>;
+    static promisify<T, A1, A2>(func: (arg1: A1, arg2: A2, callback: (err: any, result: T) => void) => void, receiver?: any): (arg1: A1, arg2: A2) => Promise<T>;
+    static promisify<T, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, result: T) => void) => void, receiver?: any): (arg1: A1, arg2: A2, arg3: A3) => Promise<T>;
+    static promisify<T, A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: (err: any, result: T) => void) => void, receiver?: any): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<T>;
+    static promisify<T, A1, A2, A3, A4, A5>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: (err: any, result: T) => void) => void, receiver?: any): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<T>;
+    static promisify(nodeFunction: Function, receiver?: any): Function;
+
+    /**
+     * Promisifies the entire object by going through the object's properties and creating an async equivalent of each function on the object and its prototype chain. The promisified method name will be the original method name postfixed with `Async`. Returns the input object.
+     *
+     * Note that the original methods on the object are not overwritten but new methods are created with the `Async`-postfix. For example, if you `promisifyAll()` the node.js `fs` object use `fs.statAsync()` to call the promisified `stat` method.
+     */
+    // TODO how to model promisifyAll?
+    static promisifyAll(target: Object): Object;
+
+    /**
+     * Returns a function that can use `yield` to run asynchronous code synchronously. This feature requires the support of generators which are drafted in the next version of the language. Node version greater than `0.11.2` is required and needs to be executed with the `--harmony-generators` (or `--harmony`) command-line switch.
+     */
+    // TODO fix coroutine GeneratorFunction
+    static coroutine<R>(generatorFunction: Function): Function;
+
+    /**
+     * Spawn a coroutine which may yield promises to run asynchronous code synchronously. This feature requires the support of generators which are drafted in the next version of the language. Node version greater than `0.11.2` is required and needs to be executed with the `--harmony-generators` (or `--harmony`) command-line switch.
+     */
+    // TODO fix spawn GeneratorFunction
+    static spawn<R>(generatorFunction: Function): Promise<R>;
+
+    /**
+     * This is relevant to browser environments with no module loader.
+     *
+     * Release control of the `Promise` namespace to whatever it was before this library was loaded. Returns a reference to the library namespace so you can attach it to something else.
+     */
+    static noConflict(): typeof Promise;
+
+    /**
+     * Add `handler` as the handler to call when there is a possibly unhandled rejection. The default handler logs the error stack to stderr or `console.error` in browsers.
+     *
+     * Passing no value or a non-function will have the effect of removing any kind of handling for possibly unhandled rejections.
+     */
+    static onPossiblyUnhandledRejection(handler: (reason: any) => any): void;
+
+    /**
+     * Given an array, or a promise of an array, which contains promises (or a mix of promises and values) return a promise that is fulfilled when all the items in the array are fulfilled. The promise's fulfillment value is an array with fulfillment values at respective positions to the original array. If any promise in the array rejects, the returned promise is rejected with the rejection reason.
+     */
+    // TODO enable more overloads
+    // promise of array with promises of value
+    static all<R>(values: Promise.Thenable<Promise.Thenable<R>[]>): Promise<R[]>;
+    // promise of array with values
+    static all<R>(values: Promise.Thenable<R[]>): Promise<R[]>;
+    // array with promises of value
+    static all<R>(values: Promise.Thenable<R>[]): Promise<R[]>;
+    // array with values
+    static all<R>(values: R[]): Promise<R[]>;
+
+    /**
+     * Like ``Promise.all`` but for object properties instead of array items. Returns a promise that is fulfilled when all the properties of the object are fulfilled. The promise's fulfillment value is an object with fulfillment values at respective keys to the original object. If any promise in the object rejects, the returned promise is rejected with the rejection reason.
+     *
+     * If `object` is a trusted `Promise`, then it will be treated as a promise for object rather than for its properties. All other objects are treated for their properties as is returned by `Object.keys` - the object's own enumerable properties.
+     *
+     * *The original object is not modified.*
+     */
+    // TODO verify this is correct
+    // trusted promise for object
+    static props(object: Promise<Object>): Promise<Object>;
+    // object
+    static props(object: Object): Promise<Object>;
+
+    /**
+     * Given an array, or a promise of an array, which contains promises (or a mix of promises and values) return a promise that is fulfilled when all the items in the array are either fulfilled or rejected. The fulfillment value is an array of ``PromiseInspection`` instances at respective positions in relation to the input array.
+     *
+     * *original: The array is not modified. The input array sparsity is retained in the resulting array.*
+     */
+    // promise of array with promises of value
+    static settle<R>(values: Promise.Thenable<Promise.Thenable<R>[]>): Promise<Promise.Inspection<R>[]>;
+    // promise of array with values
+    static settle<R>(values: Promise.Thenable<R[]>): Promise<Promise.Inspection<R>[]>;
+    // array with promises of value
+    static settle<R>(values: Promise.Thenable<R>[]): Promise<Promise.Inspection<R>[]>;
+    // array with values
+    static settle<R>(values: R[]): Promise<Promise.Inspection<R>[]>;
+
+    /**
+     * Like `Promise.some()`, with 1 as `count`. However, if the promise fulfills, the fulfillment value is not an array of 1 but the value directly.
+     */
+    // promise of array with promises of value
+    static any<R>(values: Promise.Thenable<Promise.Thenable<R>[]>): Promise<R>;
+    // promise of array with values
+    static any<R>(values: Promise.Thenable<R[]>): Promise<R>;
+    // array with promises of value
+    static any<R>(values: Promise.Thenable<R>[]): Promise<R>;
+    // array with values
+    static any<R>(values: R[]): Promise<R>;
+
+    /**
+     * Given an array, or a promise of an array, which contains promises (or a mix of promises and values) return a promise that is fulfilled or rejected as soon as a promise in the array is fulfilled or rejected with the respective rejection reason or fulfillment value.
+     *
+     * **Note** If you pass empty array or a sparse array with no values, or a promise/thenable for such, it will be forever pending.
+     */
+    // promise of array with promises of value
+    static race<R>(values: Promise.Thenable<Promise.Thenable<R>[]>): Promise<R>;
+    // promise of array with values
+    static race<R>(values: Promise.Thenable<R[]>): Promise<R>;
+    // array with promises of value
+    static race<R>(values: Promise.Thenable<R>[]): Promise<R>;
+    // array with values
+    static race<R>(values: R[]): Promise<R>;
+
+    /**
+     * Initiate a competetive race between multiple promises or values (values will become immediately fulfilled promises). When `count` amount of promises have been fulfilled, the returned promise is fulfilled with an array that contains the fulfillment values of the winners in order of resolution.
+     *
+     * If too many promises are rejected so that the promise can never become fulfilled, it will be immediately rejected with an array of rejection reasons in the order they were thrown in.
+     *
+     * *The original array is not modified.*
+     */
+    // promise of array with promises of value
+    static some<R>(values: Promise.Thenable<Promise.Thenable<R>[]>, count: number): Promise<R[]>;
+    // promise of array with values
+    static some<R>(values: Promise.Thenable<R[]>, count: number): Promise<R[]>;
+    // array with promises of value
+    static some<R>(values: Promise.Thenable<R>[], count: number): Promise<R[]>;
+    // array with values
+    static some<R>(values: R[], count: number): Promise<R[]>;
+
+    /**
+     * Like `Promise.all()` but instead of having to pass an array, the array is generated from the passed variadic arguments.
+     */
+    // variadic array with promises of value
+    static join<R>(...values: Promise.Thenable<R>[]): Promise<R[]>;
+    // variadic array with values
+    static join<R>(...values: R[]): Promise<R[]>;
+
+    /**
+     * Map an array, or a promise of an array, which contains a promises (or a mix of promises and values) with the given `mapper` function with the signature `(item, index, arrayLength)` where `item` is the resolved value of a respective promise in the input array. If any promise in the input array is rejected the returned promise is rejected as well.
+     *
+     * If the `mapper` function returns promises or thenables, the returned promise will wait for all the mapped results to be resolved as well.
+     *
+     * *The original array is not modified.*
+     */
+    // promise of array with promises of value
+    static map<R, U>(values: Promise.Thenable<Promise.Thenable<R>[]>, mapper: (item: R, index: number, arrayLength: number) => Promise.Thenable<U>): Promise<U[]>;
+    static map<R, U>(values: Promise.Thenable<Promise.Thenable<R>[]>, mapper: (item: R, index: number, arrayLength: number) => U): Promise<U[]>;
+
+    // promise of array with values
+    static map<R, U>(values: Promise.Thenable<R[]>, mapper: (item: R, index: number, arrayLength: number) => Promise.Thenable<U>): Promise<U[]>;
+    static map<R, U>(values: Promise.Thenable<R[]>, mapper: (item: R, index: number, arrayLength: number) => U): Promise<U[]>;
+
+    // array with promises of value
+    static map<R, U>(values: Promise.Thenable<R>[], mapper: (item: R, index: number, arrayLength: number) => Promise.Thenable<U>): Promise<U[]>;
+    static map<R, U>(values: Promise.Thenable<R>[], mapper: (item: R, index: number, arrayLength: number) => U): Promise<U[]>;
+
+    // array with values
+    static map<R, U>(values: R[], mapper: (item: R, index: number, arrayLength: number) => Promise.Thenable<U>): Promise<U[]>;
+    static map<R, U>(values: R[], mapper: (item: R, index: number, arrayLength: number) => U): Promise<U[]>;
+
+    /**
+     * Reduce an array, or a promise of an array, which contains a promises (or a mix of promises and values) with the given `reducer` function with the signature `(total, current, index, arrayLength)` where `item` is the resolved value of a respective promise in the input array. If any promise in the input array is rejected the returned promise is rejected as well.
+     *
+     * If the reducer function returns a promise or a thenable, the result for the promise is awaited for before continuing with next iteration.
+     *
+     * *The original array is not modified. If no `intialValue` is given and the array doesn't contain at least 2 items, the callback will not be called and `undefined` is returned. If `initialValue` is given and the array doesn't have at least 1 item, `initialValue` is returned.*
+     */
+    // promise of array with promises of value
+    static reduce<R, U>(values: Promise.Thenable<Promise.Thenable<R>[]>, reducer: (total: U, current: R, index: number, arrayLength: number) => Promise.Thenable<U>, initialValue?: U): Promise<U>;
+    static reduce<R, U>(values: Promise.Thenable<Promise.Thenable<R>[]>, reducer: (total: U, current: R, index: number, arrayLength: number) => U, initialValue?: U): Promise<U>;
+
+    // promise of array with values
+    static reduce<R, U>(values: Promise.Thenable<R[]>, reducer: (total: U, current: R, index: number, arrayLength: number) => Promise.Thenable<U>, initialValue?: U): Promise<U>;
+    static reduce<R, U>(values: Promise.Thenable<R[]>, reducer: (total: U, current: R, index: number, arrayLength: number) => U, initialValue?: U): Promise<U>;
+
+    // array with promises of value
+    static reduce<R, U>(values: Promise.Thenable<R>[], reducer: (total: U, current: R, index: number, arrayLength: number) => Promise.Thenable<U>, initialValue?: U): Promise<U>;
+    static reduce<R, U>(values: Promise.Thenable<R>[], reducer: (total: U, current: R, index: number, arrayLength: number) => U, initialValue?: U): Promise<U>;
+
+    // array with values
+    static reduce<R, U>(values: R[], reducer: (total: U, current: R, index: number, arrayLength: number) => Promise.Thenable<U>, initialValue?: U): Promise<U>;
+    static reduce<R, U>(values: R[], reducer: (total: U, current: R, index: number, arrayLength: number) => U, initialValue?: U): Promise<U>;
+
+    /**
+     * Filter an array, or a promise of an array, which contains a promises (or a mix of promises and values) with the given `filterer` function with the signature `(item, index, arrayLength)` where `item` is the resolved value of a respective promise in the input array. If any promise in the input array is rejected the returned promise is rejected as well.
+     *
+     * The return values from the filtered functions are coerced to booleans, with the exception of promises and thenables which are awaited for their eventual result.
+     *
+     * *The original array is not modified.
+     */
+    // promise of array with promises of value
+    static filter<R>(values: Promise.Thenable<Promise.Thenable<R>[]>, filterer: (item: R, index: number, arrayLength: number) => Promise.Thenable<boolean>): Promise<R[]>;
+    static filter<R>(values: Promise.Thenable<Promise.Thenable<R>[]>, filterer: (item: R, index: number, arrayLength: number) => boolean): Promise<R[]>;
+
+    // promise of array with values
+    static filter<R>(values: Promise.Thenable<R[]>, filterer: (item: R, index: number, arrayLength: number) => Promise.Thenable<boolean>): Promise<R[]>;
+    static filter<R>(values: Promise.Thenable<R[]>, filterer: (item: R, index: number, arrayLength: number) => boolean): Promise<R[]>;
+
+    // array with promises of value
+    static filter<R>(values: Promise.Thenable<R>[], filterer: (item: R, index: number, arrayLength: number) => Promise.Thenable<boolean>): Promise<R[]>;
+    static filter<R>(values: Promise.Thenable<R>[], filterer: (item: R, index: number, arrayLength: number) => boolean): Promise<R[]>;
+
+    // array with values
+    static filter<R>(values: R[], filterer: (item: R, index: number, arrayLength: number) => Promise.Thenable<boolean>): Promise<R[]>;
+    static filter<R>(values: R[], filterer: (item: R, index: number, arrayLength: number) => boolean): Promise<R[]>;
+}
+
+declare module Promise {
+    export interface RangeError extends Error {
+    }
+    export interface CancellationError extends Error {
+    }
+    export interface TimeoutError extends Error {
+    }
+    export interface TypeError extends Error {
+    }
+    export interface RejectionError extends Error {
+    }
+    export interface OperationalError extends Error {
     }
 
-    interface Deferred<T> {
-        promise: Promise<T>;
-        resolve(value: T): void;
+    // Ideally, we'd define e.g. "export class RangeError extends Error {}",
+    // but as Error is defined as an interface (not a class), TypeScript doesn't
+    // allow extending Error, only implementing it.
+    // However, if we want to catch() only a specific error type, we need to pass
+    // a constructor function to it. So, as a workaround, we define them here as such.
+    export function RangeError(): RangeError;
+    export function CancellationError(): CancellationError;
+    export function TimeoutError(): TimeoutError;
+    export function TypeError(): TypeError;
+    export function RejectionError(): RejectionError;
+    export function OperationalError(): OperationalError;
+
+    export interface Thenable<R> {
+        then<U>(onFulfilled: (value: R) => Thenable<U>, onRejected: (error: any) => Thenable<U>): Thenable<U>;
+        then<U>(onFulfilled: (value: R) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
+        then<U>(onFulfilled: (value: R) => U, onRejected: (error: any) => Thenable<U>): Thenable<U>;
+        then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U): Thenable<U>;
+    }
+
+    export interface Resolver<R> {
+        /**
+         * Returns a reference to the controlled promise that can be passed to clients.
+         */
+        promise: Promise<R>;
+
+        /**
+         * Resolve the underlying promise with `value` as the resolution value. If `value` is a thenable or a promise, the underlying promise will assume its state.
+         */
+        resolve(value: R): void;
+        resolve(): void;
+
+        /**
+         * Reject the underlying promise with `reason` as the rejection reason.
+         */
         reject(reason: any): void;
-        notify(value: any): void;
-        makeNodeResolver(): (reason: any, value: T) => void;
+
+        /**
+         * Progress the underlying promise with `value` as the progression value.
+         */
+        progress(value: any): void;
+
+        /**
+         * Gives you a callback representation of the `PromiseResolver`. Note that this is not a method but a property. The callback accepts error object in first argument and success values on the 2nd parameter and the rest, I.E. node js conventions.
+         *
+         * If the the callback is called with multiple success values, the resolver fullfills its promise with an array of the values.
+         */
+        // TODO specify resolver callback
+        callback: (err: any, value: R, ...values: R[]) => void;
     }
 
-    interface Promise<T> {
+    export interface Inspection<R> {
         /**
-         * Like a finally clause, allows you to observe either the fulfillment or rejection of a promise, but to do so without modifying the final value. This is useful for collecting resources regardless of whether a job succeeded, like closing a database connection, shutting a server down, or deleting an unneeded key from an object.
-
-         * finally returns a promise, which will become resolved with the same fulfillment value or rejection reason as promise. However, if callback returns a promise, the resolution of the returned promise will be delayed until the promise returned from callback is finished.
-         */
-        fin(finallyCallback: () => any): Promise<T>;
-        /**
-         * Like a finally clause, allows you to observe either the fulfillment or rejection of a promise, but to do so without modifying the final value. This is useful for collecting resources regardless of whether a job succeeded, like closing a database connection, shutting a server down, or deleting an unneeded key from an object.
-
-         * finally returns a promise, which will become resolved with the same fulfillment value or rejection reason as promise. However, if callback returns a promise, the resolution of the returned promise will be delayed until the promise returned from callback is finished.
-         */
-        finally(finallyCallback: () => any): Promise<T>;
-
-        /**
-         * The then method from the Promises/A+ specification, with an additional progress handler.
-         */
-        then<U>(onFulfill?: (value: T) => U | IPromise<U>, onReject?: (error: any) => U | IPromise<U>, onProgress?: Function): Promise<U>;
-
-        /**
-         * Like then, but "spreads" the array into a variadic fulfillment handler. If any of the promises in the array are rejected, instead calls onRejected with the first rejected promise's rejection reason.
-         * 
-         * This is especially useful in conjunction with all
-         */
-        spread<U>(onFulfilled: Function, onRejected?: Function): Promise<U>;
-
-        fail<U>(onRejected: (reason: any) => U | IPromise<U>): Promise<U>;
-
-        /**
-         * A sugar method, equivalent to promise.then(undefined, onRejected).
-         */
-        catch<U>(onRejected: (reason: any) => U | IPromise<U>): Promise<U>;
-
-        /**
-         * A sugar method, equivalent to promise.then(undefined, undefined, onProgress).
-         */
-        progress(onProgress: (progress: any) => any): Promise<T>;
-
-        /**
-         * Much like then, but with different behavior around unhandled rejection. If there is an unhandled rejection, either because promise is rejected and no onRejected callback was provided, or because onFulfilled or onRejected threw an error or returned a rejected promise, the resulting rejection reason is thrown as an exception in a future turn of the event loop.
-         *
-         * This method should be used to terminate chains of promises that will not be passed elsewhere. Since exceptions thrown in then callbacks are consumed and transformed into rejections, exceptions at the end of the chain are easy to accidentally, silently ignore. By arranging for the exception to be thrown in a future turn of the event loop, so that it won't be caught, it causes an onerror event on the browser window, or an uncaughtException event on Node.js's process object.
-         *
-         * Exceptions thrown by done will have long stack traces, if Q.longStackSupport is set to true. If Q.onerror is set, exceptions will be delivered there instead of thrown in a future turn.
-         *
-         * The Golden Rule of done vs. then usage is: either return your promise to someone else, or if the chain ends with you, call done to terminate it.
-         */
-        done(onFulfilled?: (value: T) => any, onRejected?: (reason: any) => any, onProgress?: (progress: any) => any): void;
-
-        /**
-         * If callback is a function, assumes it's a Node.js-style callback, and calls it as either callback(rejectionReason) when/if promise becomes rejected, or as callback(null, fulfillmentValue) when/if promise becomes fulfilled. If callback is not a function, simply returns promise.
-         */
-        nodeify(callback: (reason: any, value: any) => void): Promise<T>;
-
-        /**
-         * Returns a promise to get the named property of an object. Essentially equivalent to
-         * 
-         * promise.then(function (o) {
-         *     return o[propertyName];
-         * });
-         */
-        get<U>(propertyName: String): Promise<U>;
-        set<U>(propertyName: String, value: any): Promise<U>;
-        delete<U>(propertyName: String): Promise<U>;
-        /**
-         * Returns a promise for the result of calling the named method of an object with the given array of arguments. The object itself is this in the function, just like a synchronous method call. Essentially equivalent to
-         * 
-         * promise.then(function (o) {
-         *     return o[methodName].apply(o, args);
-         * });
-         */
-        post<U>(methodName: String, args: any[]): Promise<U>;
-        /**
-         * Returns a promise for the result of calling the named method of an object with the given variadic arguments. The object itself is this in the function, just like a synchronous method call.
-         */
-        invoke<U>(methodName: String, ...args: any[]): Promise<U>;
-        fapply<U>(args: any[]): Promise<U>;
-        fcall<U>(...args: any[]): Promise<U>;
-
-        /**
-         * Returns a promise for an array of the property names of an object. Essentially equivalent to
-         * 
-         * promise.then(function (o) {
-         *     return Object.keys(o);
-         * });
-         */
-        keys(): Promise<string[]>;
-
-        /**
-         * A sugar method, equivalent to promise.then(function () { return value; }).
-         */
-        thenResolve<U>(value: U): Promise<U>;
-        /**
-         * A sugar method, equivalent to promise.then(function () { throw reason; }).
-         */
-        thenReject(reason: any): Promise<T>;
-        timeout(ms: number, message?: string): Promise<T>;
-        /**
-         * Returns a promise that will have the same result as promise, but will only be fulfilled or rejected after at least ms milliseconds have passed.
-         */
-        delay(ms: number): Promise<T>;
-
-        /**
-         * Returns whether a given promise is in the fulfilled state. When the static version is used on non-promises, the result is always true.
+         * See if the underlying promise was fulfilled at the creation time of this inspection object.
          */
         isFulfilled(): boolean;
+
         /**
-         * Returns whether a given promise is in the rejected state. When the static version is used on non-promises, the result is always false.
+         * See if the underlying promise was rejected at the creation time of this inspection object.
          */
         isRejected(): boolean;
+
         /**
-         * Returns whether a given promise is in the pending state. When the static version is used on non-promises, the result is always false.
+         * See if the underlying promise was defer at the creation time of this inspection object.
          */
         isPending(): boolean;
 
-        valueOf(): any;
+        /**
+         * Get the fulfillment value of the underlying promise. Throws if the promise wasn't fulfilled at the creation time of this inspection object.
+         *
+         * throws `TypeError`
+         */
+        value(): R;
 
         /**
-         * Returns a "state snapshot" object, which will be in one of three forms:
-         * 
-         * - { state: "pending" }
-         * - { state: "fulfilled", value: <fulfllment value> }
-         * - { state: "rejected", reason: <rejection reason> }
+         * Get the rejection reason for the underlying promise. Throws if the promise wasn't rejected at the creation time of this inspection object.
+         *
+         * throws `TypeError`
          */
-        inspect(): PromiseState<T>;
+        reason(): any;
     }
 
-    interface PromiseState<T> {
-        /**
-         * "fulfilled", "rejected", "pending"
-         */
-        state: string;
-        value?: T;
-        reason?: any;
-    }
-
-    // If no value provided, returned promise will be of void type
-    export function when(): Promise<void>;
-
-    // if no fulfill, reject, or progress provided, returned promise will be of same type
-    export function when<T>(value: T | IPromise<T>): Promise<T>;
-
-    // If a non-promise value is provided, it will not reject or progress
-    export function when<T, U>(value: T | IPromise<T>, onFulfilled: (val: T) => U | IPromise<U>, onRejected?: (reason: any) => U | IPromise<U>, onProgress?: (progress: any) => any): Promise<U>;
-
-    /** 
-     * Currently "impossible" (and I use the term loosely) to implement due to TypeScript limitations as it is now.
-     * See: https://github.com/Microsoft/TypeScript/issues/1784 for discussion on it.
-     */
-    // export function try(method: Function, ...args: any[]): Promise<any>; 
-
-    export function fbind<T>(method: (...args: any[]) => T | IPromise<T>, ...args: any[]): (...args: any[]) => Promise<T>;
-
-    export function fcall<T>(method: (...args: any[]) => T, ...args: any[]): Promise<T>;
-
-    export function send<T>(obj: any, functionName: string, ...args: any[]): Promise<T>;
-    export function invoke<T>(obj: any, functionName: string, ...args: any[]): Promise<T>;
-    export function mcall<T>(obj: any, functionName: string, ...args: any[]): Promise<T>;
-
-    export function denodeify<T>(nodeFunction: Function, ...args: any[]): (...args: any[]) => Promise<T>;
-    export function nbind<T>(nodeFunction: Function, thisArg: any, ...args: any[]): (...args: any[]) => Promise<T>;
-    export function nfbind<T>(nodeFunction: Function, ...args: any[]): (...args: any[]) => Promise<T>;
-    export function nfcall<T>(nodeFunction: Function, ...args: any[]): Promise<T>;
-    export function nfapply<T>(nodeFunction: Function, args: any[]): Promise<T>;
-
-    export function ninvoke<T>(nodeModule: any, functionName: string, ...args: any[]): Promise<T>;
-    export function npost<T>(nodeModule: any, functionName: string, args: any[]): Promise<T>;
-    export function nsend<T>(nodeModule: any, functionName: string, ...args: any[]): Promise<T>;
-    export function nmcall<T>(nodeModule: any, functionName: string, ...args: any[]): Promise<T>;
-
     /**
-     * Returns a promise that is fulfilled with an array containing the fulfillment value of each promise, or is rejected with the same rejection reason as the first promise to be rejected.
-     */
-    export function all<T>(promises: IPromise<T>[]): Promise<T[]>;
-
-    /**
-     * Returns a promise that is fulfilled with an array of promise state snapshots, but only after all the original promises have settled, i.e. become either fulfilled or rejected.
-     */
-    export function allSettled<T>(promises: IPromise<T>[]): Promise<PromiseState<T>[]>;
-
-    export function allResolved<T>(promises: IPromise<T>[]): Promise<Promise<T>[]>;
-
-    /**
-     * Like then, but "spreads" the array into a variadic fulfillment handler. If any of the promises in the array are rejected, instead calls onRejected with the first rejected promise's rejection reason. 
-     * This is especially useful in conjunction with all.
-     */
-    export function spread<T, U>(promises: IPromise<T>[], onFulfilled: (...args: T[]) => U | IPromise<U>, onRejected?: (reason: any) => U | IPromise<U>): Promise<U>;
-
-    /**
-     * Returns a promise that will have the same result as promise, except that if promise is not fulfilled or rejected before ms milliseconds, the returned promise will be rejected with an Error with the given message. If message is not supplied, the message will be "Timed out after " + ms + " ms".
-     */
-    export function timeout<T>(promise: Promise<T>, ms: number, message?: string): Promise<T>;
-
-    /**
-     * Returns a promise that will have the same result as promise, but will only be fulfilled or rejected after at least ms milliseconds have passed.
-     */
-    export function delay<T>(promise: Promise<T>, ms: number): Promise<T>;
-    /**
-     * Returns a promise that will have the same result as promise, but will only be fulfilled or rejected after at least ms milliseconds have passed.
-     */
-    export function delay<T>(value: T, ms: number): Promise<T>;
-    /**
-     * Returns a promise that will be fulfilled with undefined after at least ms milliseconds have passed.
-     */
-    export function delay(ms: number): Promise<void>;
-    /**
-     * Returns whether a given promise is in the fulfilled state. When the static version is used on non-promises, the result is always true.
-     */
-    export function isFulfilled(promise: Promise<any>): boolean;
-    /**
-     * Returns whether a given promise is in the rejected state. When the static version is used on non-promises, the result is always false.
-     */
-    export function isRejected(promise: Promise<any>): boolean;
-    /**
-     * Returns whether a given promise is in the pending state. When the static version is used on non-promises, the result is always false.
-     */
-    export function isPending(promise: Promise<any>): boolean;
-
-    /**
-     * Returns a "deferred" object with a:
-     * promise property
-     * resolve(value) method
-     * reject(reason) method
-     * notify(value) method
-     * makeNodeResolver() method
-     */
-    export function defer<T>(): Deferred<T>;
-
-    /**
-     * Returns a promise that is rejected with reason.
-     */
-    export function reject<T>(reason?: any): Promise<T>;
-
-    export function Promise<T>(resolver: (resolve: (val: T | IPromise<T>) => void , reject: (reason: any) => void, notify: (progress: any) => void) => void ): Promise<T>;
-
-    /**
-     * Creates a new version of func that accepts any combination of promise and non-promise values, converting them to their fulfillment values before calling the original func. The returned version also always returns a promise: if func does a return or throw, then Q.promised(func) will return fulfilled or rejected promise, respectively.
+     * Changes how bluebird schedules calls a-synchronously.
      *
-     * This can be useful for creating functions that accept either promises or non-promise values, and for ensuring that the function always returns a promise even in the face of unintentional thrown exceptions.
+     * @param scheduler Should be a function that asynchronously schedules
+     *                  the calling of the passed in function
      */
-    export function promised<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;
-
-    /**
-     * Returns whether the given value is a Q promise.
-     */
-    export function isPromise(object: any): boolean;
-    /**
-     * Returns whether the given value is a promise (i.e. it's an object with a then function).
-     */
-    export function isPromiseAlike(object: any): boolean;
-    /**
-     * Returns whether a given promise is in the pending state. When the static version is used on non-promises, the result is always false.
-     */
-    export function isPending(object: any): boolean;
-
-    /**
-     * This is an experimental tool for converting a generator function into a deferred function. This has the potential of reducing nested callbacks in engines that support yield.
-     */
-    export function async<T>(generatorFunction: any): (...args: any[]) => Promise<T>;
-    export function nextTick(callback: Function): void;
-
-    /**
-     * A settable property that will intercept any uncaught errors that would otherwise be thrown in the next tick of the event loop, usually as a result of done. Can be useful for getting the full stack trace of an error in browsers, which is not usually possible with window.onerror.
-     */
-    export var onerror: (reason: any) => void;
-    /**
-     * A settable property that lets you turn on long stack trace support. If turned on, "stack jumps" will be tracked across asynchronous promise operations, so that if an uncaught error is thrown by done or a rejection reason's stack property is inspected in a rejection callback, a long stack trace is produced.
-     */
-    export var longStackSupport: boolean;
-
-    /**
-     * Calling resolve with a pending promise causes promise to wait on the passed promise, becoming fulfilled with its fulfillment value or rejected with its rejection reason (or staying pending forever, if the passed promise does).
-     * Calling resolve with a rejected promise causes promise to be rejected with the passed promise's rejection reason.
-     * Calling resolve with a fulfilled promise causes promise to be fulfilled with the passed promise's fulfillment value.
-     * Calling resolve with a non-promise value causes promise to be fulfilled with that value.
-     */
-    export function resolve<T>(object: IPromise<T>): Promise<T>;
-    /**
-     * Calling resolve with a pending promise causes promise to wait on the passed promise, becoming fulfilled with its fulfillment value or rejected with its rejection reason (or staying pending forever, if the passed promise does).
-     * Calling resolve with a rejected promise causes promise to be rejected with the passed promise's rejection reason.
-     * Calling resolve with a fulfilled promise causes promise to be fulfilled with the passed promise's fulfillment value.
-     * Calling resolve with a non-promise value causes promise to be fulfilled with that value.
-     */
-    export function resolve<T>(object: T): Promise<T>;
+    export function setScheduler(scheduler: (callback: (...args: any[]) => void) => void): void;
 }
 
-declare module "q" {
-    export = Q;
+declare module 'bluebird' {
+    export = Promise;
 }
