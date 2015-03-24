@@ -1,31 +1,39 @@
 {
-    "name": "flux-chat",
-    "version": "0.0.2",
-    "description": "Example Flux chat application primarily intended to explain the use of Dispatcher.waitFor().",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/facebook/flux"
-    },
-    "main": "./app.js",
-    "dependencies": {
-        "flux": "^2.0.0",
-        "react": "^0.12.0"
-    },
-    "devDependencies": {
-        "browserify": "^6.2.0"
-    },
-    "browserify": {
-        "transform": [
-            [ "reactify", { "es6": false } ]
-        ]
-    },
-    "bugs": {
-        "url": "https://github.com/facebook/flux/issues"
-    },
-    "homepage": "https://github.com/facebook/flux",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "license": "ISC"
+  "name": "flux-chat",
+  "version": "0.0.2",
+  "description": "Example Flux chat application primarily intended to explain the use of Dispatcher.waitFor().",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/flux"
+  },
+  "main": "./app.js",
+  "dependencies": {
+    "bluebird": "^2.9.14",
+    "browserify": "^9.0.3",
+    "flux": "^2.0.0",
+    "react": "^0.12.0",
+    "reactify": "^1.1.0"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "reactify",
+        {
+          "es6": false
+        }
+      ]
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/facebook/flux/issues"
+  },
+  "homepage": "https://github.com/facebook/flux",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }
