@@ -28,4 +28,5 @@ func RegisterControllers() {
 
 	//temporary for dev
     beego.SetStaticPath("/dev","static")
+    beego.SetStaticPath("/test","Scripts")
 }
