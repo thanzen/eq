@@ -37,7 +37,7 @@ gulp.task('app', function () {
           //libs.forEach(function (lib) {
           //    bundle.external(lib);
           //});
-      }).pipe(gulp.dest('./dist/apps'));
+      }).pipe(gulp.dest('./dist'));
 
     return stream;
 });

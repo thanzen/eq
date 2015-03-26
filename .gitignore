@@ -36,4 +36,7 @@ static/js
 static/node_modules
 vwd.webinfo
 *.rej
+
+#front end related
 Scripts/node_modules
+Scripts/dist
