@@ -26,7 +26,7 @@ var RoleStore = (function (_super) {
 
     RoleStore.prototype.receiveAll = function (roles) {
         this.roles = [];
-        this.roles.concat(roles);
+        this.roles = this.roles.concat(roles);
     };
 
     RoleStore.prototype.registerEvents = function () {

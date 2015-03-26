@@ -50,3 +50,7 @@
 /// <reference path="app.js" />
 /// <reference path="bundle.js" />
 /// <reference path="dispatcher.js" />
+/// <reference path="gulpfile.js" />
+/// <reference path="noop.js" />
+/// <reference path="test.js" />
+/// <reference path="lib.js/noop.js" />

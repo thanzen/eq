@@ -10,7 +10,6 @@ action.roleGetAll();
 
 
 
-
 React.render(
     <ChatApp />,
     document.getElementById('react')

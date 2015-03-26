@@ -18,7 +18,7 @@ export class RoleStore extends events.EventEmitter {
 
     private receiveAll(roles: role.Role[]) {
         this.roles = [];
-        this.roles.concat(roles);
+        this.roles = this.roles.concat(roles);
     }
 
     private registerEvents(): string {

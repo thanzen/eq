@@ -1,12 +1,33 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html class="no-js" lang="">
 <head>
-    <title></title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Eq Admin</title>
+    <meta name="description" content="Google's material design UI components built with React.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" type="text/css" href="main.css">-->
 </head>
 <body>
     What you can do here
     <div id="react"></div>
-    <script src="libs/react.jsx.transformer.js"></script>
-    <script src="bundle.js"></script>
+
+    <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
+    <script>
+        var WebFontConfig = {
+            google: { families: ['Roboto:400,300,500:latin'] }
+        };
+        (function () {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+    <script src="./dist/libs/lib.js"></script>
+    <script src="./dist/apps/app.js"></script>
 </body>
 </html>
