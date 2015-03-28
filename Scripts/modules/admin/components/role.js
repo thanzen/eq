@@ -1,6 +1,12 @@
 ﻿var React = require('react');
 var action = require("../actions/adminActions")
 var store = require("../stores/roleStore")
+var ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
+var Button = require('react-bootstrap/lib/Button');
+var DropdownButton = require('react-bootstrap/lib/DropdownButton');
+var MenuItem = require('react-bootstrap/lib/MenuItem');
+
+
 
 
 function getTodoItem(role) {
@@ -15,6 +21,17 @@ function getItems(){
         roles:rs
     }
 }
+
+const buttonGroupInstance = (
+  <ButtonGroup>
+    <Button>1</Button>
+    <Button>2</Button>
+    <DropdownButton title='Dropdown'>
+      <MenuItem eventKey='1'>Dropdown link</MenuItem>
+      <MenuItem eventKey='2'>Dropdown link</MenuItem>
+    </DropdownButton>
+  </ButtonGroup>
+);
 
 
 var ChatApp = React.createClass({
@@ -43,7 +60,7 @@ var ChatApp = React.createClass({
     {todoItems}
     <button onClick={this.onclick}>receive</button>
     <button  onClick={this.btnClick}>reset</button>
-
+    {buttonGroupInstance}
   </div>
       );
     },
