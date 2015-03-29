@@ -1,12 +1,14 @@
-﻿var React = require('react');
+﻿var React = require('react/addons');
 var action = require("../actions/adminActions")
 var store = require("../stores/roleStore")
 var ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 var Button = require('react-bootstrap/lib/Button');
 var DropdownButton = require('react-bootstrap/lib/DropdownButton');
 var MenuItem = require('react-bootstrap/lib/MenuItem');
+var Table = require('react-bootstrap/lib/Table');
+var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
 
-
+var ListGroup = require('react-bootstrap/lib/ListGroup');
 
 
 function getTodoItem(role) {
@@ -14,6 +16,59 @@ function getTodoItem(role) {
       <div>{role.name}</div>
     );
 }
+
+var cx = React.addons.classSet;
+var classes = cx({
+    'success': true,
+    'active': true
+});
+
+
+const tableInstance = (
+  <Table striped bordered condensed hover>
+    <thead>
+      <tr success>
+        <th></th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Username</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className={classes}>
+        <td>1</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+      </tr>
+      <tr className={classes}>
+        <td>2</td>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td colSpan="2">Larry the Bird</td>
+        <td>@twitter</td>
+      </tr>
+    </tbody>
+  </Table>
+);
+
+var isFirst =true;
+var isSecond = false;
+
+const listgroupInstance = (
+  <ListGroup>
+    <ListGroupItem  className={classes}>Link 1</ListGroupItem>
+    <ListGroupItem  disabled>Link 2</ListGroupItem>
+    <ListGroupItem  disabled>Link 3</ListGroupItem>
+  </ListGroup>
+);
+
+
+
 
 function getItems(){
     var rs = store.RoleStoreInstance.getAll();
@@ -32,7 +87,6 @@ const buttonGroupInstance = (
     </DropdownButton>
   </ButtonGroup>
 );
-
 
 var ChatApp = React.createClass({
     getInitialState: function() {
@@ -61,6 +115,8 @@ var ChatApp = React.createClass({
     <button onClick={this.onclick}>receive</button>
     <button  onClick={this.btnClick}>reset</button>
     {buttonGroupInstance}
+    {tableInstance}
+    {listgroupInstance}
   </div>
       );
     },

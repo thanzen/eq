@@ -5,7 +5,7 @@ var service = admin.AdminService;
 var eventType = et.EventType;
 var dispatcher = disp.Dispatcher;
 exports.roleGetAll = function () {
-    service.getAllRoles().then(function (response) {
+    return service.getAllRoles().then(function (response) {
         dispatcher.dispatch({ type: eventType.ROLES_RECEVIVE_ALL, roles: response });
     });
 };

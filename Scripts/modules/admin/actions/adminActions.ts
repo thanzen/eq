@@ -5,7 +5,7 @@ var service = admin.AdminService;
 var eventType = et.EventType;
 var dispatcher = disp.Dispatcher;
 export var roleGetAll = function () {
-    service.getAllRoles().then(
+  return  service.getAllRoles().then(
         (response: any) => {
             dispatcher.dispatch({ type: eventType.ROLES_RECEVIVE_ALL, roles:response});
         });
