@@ -5,10 +5,12 @@
     d.prototype = new __();
 };
 ///<reference path="../../../libs/flux.d.ts" />
+///<reference path='../../../node_modules/immutable/dist/Immutable.d.ts'/>
 var events = require("../../../events/events");
 var disp = require("../../../dispatcher");
-
+var role = require("../models/role");
 var at = require("../eventType");
+
 var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
 
@@ -22,6 +24,13 @@ var RoleStore = (function (_super) {
     }
     RoleStore.prototype.getAll = function () {
         return this.roles;
+    };
+
+    RoleStore.prototype.getRole = function (id) {
+        var roles = this.roles.filter(function (role) {
+            return role.id === id;
+        });
+        return roles.length > 0 ? roles[0] : new role.Role();
     };
 
     RoleStore.prototype.receiveAll = function (roles) {
