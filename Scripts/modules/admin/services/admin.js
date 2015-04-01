@@ -1,4 +1,6 @@
-﻿var AdminService = (function () {
+var jQuery = require("jquery");
+var $ = jQuery;
+var AdminService = (function () {
     function AdminService() {
     }
     AdminService.getAllRoles = function () {

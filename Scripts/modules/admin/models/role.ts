@@ -1,4 +1,4 @@
-﻿import perm = require("permission");
+﻿import perm = require("./permission");
 export class Role {
     id: number;
     name: string;

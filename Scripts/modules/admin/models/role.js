@@ -1,4 +1,4 @@
-﻿var Role = (function () {
+var Role = (function () {
     function Role() {
     }
     return Role;

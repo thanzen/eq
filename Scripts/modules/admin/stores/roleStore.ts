@@ -9,7 +9,7 @@ var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
 
 export class RoleStore extends events.EventEmitter {
-    constructor(private roles: role.Role[]= []) {
+    constructor(private roles: role.Role[] = []) {
         super();
         this.dispatchToken = this.registerEvents();
     }
@@ -18,8 +18,8 @@ export class RoleStore extends events.EventEmitter {
         return this.roles;
     }
 
-    getRole(id:number): role.Role {
-        var roles: role.Role[] = this.roles.filter(function (role) {
+    getRole(id: number): role.Role {
+        var roles: role.Role[] = this.roles.filter(function(role) {
             return role.id === id;
         });
         return roles.length > 0 ? roles[0] : new role.Role();
