@@ -1,19 +1,13 @@
 ﻿var React = require('react/addons');
 var action = require("../../actions/adminActions");
 var store = require("../../stores/roleStore");
-
 var RoleListItem = require('./RoleListItem');
-
 var Button = require('react-bootstrap/lib/Button');
-
 var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
-
 var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
-
 var ListGroup = require('react-bootstrap/lib/ListGroup');
-
-
 var RoleForm = require('./RoleForm');
+
 //init data
 function initData() {
     var rs = store.RoleStoreInstance.getAll();

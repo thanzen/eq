@@ -1,4 +1,4 @@
-﻿///<reference path="../../../libs/flux.d.ts" />
+﻿///<reference path='../../../libs/definitions/flux.d.ts' />
 ///<reference path='../../../node_modules/immutable/dist/Immutable.d.ts'/>
 import events = require("../../../events/events");
 import disp = require("../../../dispatcher");

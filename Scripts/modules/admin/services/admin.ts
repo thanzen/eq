@@ -1,5 +1,5 @@
-﻿///<reference path="../../../libs/bluebird.d.ts" />
-///<reference path="../../../libs/jquery.d.ts" />
+﻿///<reference path="../../../libs/definitions/bluebird.d.ts" />
+///<reference path="../../../libs/definitions/jquery.d.ts" />
 import rs = require("../stores/roleStore");
 import role = require("../models/role");
 import perm = require("../models/permission");

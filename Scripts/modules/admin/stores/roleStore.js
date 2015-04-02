@@ -4,7 +4,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-///<reference path="../../../libs/flux.d.ts" />
+///<reference path='../../../libs/definitions/flux.d.ts' />
 ///<reference path='../../../node_modules/immutable/dist/Immutable.d.ts'/>
 var events = require("../../../events/events");
 var disp = require("../../../dispatcher");

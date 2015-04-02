@@ -2,7 +2,6 @@
 var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
 var ListGroup = require('react-bootstrap/lib/ListGroup');
 
-
 var cx = React.addons.classSet;
 function getClasses(role, currentSelected) {
     return cx({
