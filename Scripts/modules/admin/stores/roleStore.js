@@ -10,28 +10,30 @@ var events = require("../../../events/events");
 var disp = require("../../../dispatcher");
 var role = require("../models/role");
 var at = require("../eventType");
+var Immutable = require('immutable');
 var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
 var RoleStore = (function (_super) {
     __extends(RoleStore, _super);
     function RoleStore(roles) {
-        if (roles === void 0) { roles = []; }
+        if (roles === void 0) { roles = Immutable.List(); }
         _super.call(this);
         this.roles = roles;
         this.dispatchToken = this.registerEvents();
     }
     RoleStore.prototype.getAll = function () {
-        return this.roles;
+        return this.roles.toArray();
     };
     RoleStore.prototype.getRole = function (id) {
         var roles = this.roles.filter(function (role) {
             return role.id === id;
         });
-        return roles.length > 0 ? roles[0] : new role.Role();
+        return roles.count() > 0 ? roles.first() : new role.Role();
     };
     RoleStore.prototype.receiveAll = function (roles) {
-        this.roles = [];
-        this.roles = this.roles.concat(roles);
+        this.roles = Immutable.List();
+        this.roles = (_a = this.roles).push.apply(_a, roles);
+        var _a;
     };
     RoleStore.prototype.registerEvents = function () {
         var _this = this;

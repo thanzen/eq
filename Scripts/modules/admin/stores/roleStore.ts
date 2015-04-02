@@ -9,25 +9,25 @@ var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
 
 export class RoleStore extends events.EventEmitter {
-    constructor(private roles: role.Role[] = []) {
+    constructor(private roles: Immutable.List<role.Role> = Immutable.List<role.Role>()) {
         super();
         this.dispatchToken = this.registerEvents();
     }
 
     getAll(): role.Role[] {
-        return this.roles;
+        return this.roles.toArray();
     }
 
     getRole(id: number): role.Role {
-        var roles: role.Role[] = this.roles.filter(function(role) {
+        var roles: Immutable.Iterable<number,role.Role>  = this.roles.filter(function(role) {
             return role.id === id;
         });
-        return roles.length > 0 ? roles[0] : new role.Role();
+        return roles.count() > 0 ? roles.first() : new role.Role();
     }
 
     private receiveAll(roles: role.Role[]) {
-        this.roles = [];
-        this.roles = this.roles.concat(roles);
+        this.roles = Immutable.List<role.Role>();
+        this.roles = this.roles.push(...roles);
     }
 
     private registerEvents(): string {
