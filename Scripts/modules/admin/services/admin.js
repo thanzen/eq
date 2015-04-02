@@ -1,5 +1,4 @@
-var jQuery = require("jquery");
-var $ = jQuery;
+var $ = require("jquery");
 var AdminService = (function () {
     function AdminService() {
     }
