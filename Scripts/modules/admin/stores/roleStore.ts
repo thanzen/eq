@@ -7,7 +7,7 @@ import at = require("../eventType");
 import Immutable = require('immutable');
 var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
-
+export const ChangeEvent = "CHANGE";
 export class RoleStore extends events.EventEmitter {
     constructor(private roles: Immutable.List<role.Role> = Immutable.List<role.Role>()) {
         super();
@@ -36,11 +36,11 @@ export class RoleStore extends events.EventEmitter {
             switch (action.type) {
                 case EventType.ROLES_RECEVIVE_ALL:
                     this.receiveAll(action.roles);
-                    this.emit("change");
+                    this.emit(ChangeEvent);
                     break;
                 case EventType.ROLES_RECEVIVE_CREATE:
                     this.roles.push(action.role);
-                    this.emit("change");
+                    this.emit(ChangeEvent);
                     break;
                 default:
                     break;

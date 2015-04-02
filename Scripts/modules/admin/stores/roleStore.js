@@ -13,6 +13,7 @@ var at = require("../eventType");
 var Immutable = require('immutable');
 var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
+exports.ChangeEvent = "CHANGE";
 var RoleStore = (function (_super) {
     __extends(RoleStore, _super);
     function RoleStore(roles) {
@@ -41,11 +42,11 @@ var RoleStore = (function (_super) {
             switch (action.type) {
                 case EventType.ROLES_RECEVIVE_ALL:
                     _this.receiveAll(action.roles);
-                    _this.emit("change");
+                    _this.emit(exports.ChangeEvent);
                     break;
                 case EventType.ROLES_RECEVIVE_CREATE:
                     _this.roles.push(action.role);
-                    _this.emit("change");
+                    _this.emit(exports.ChangeEvent);
                     break;
                 default:
                     break;

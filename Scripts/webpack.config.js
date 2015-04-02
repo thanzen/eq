@@ -1,8 +1,8 @@
 module.exports = {
   context: __dirname,
-  entry: './app.js',
+  entry: './admin.js',
   output: {
-    filename: 'bundle.js'
+    filename: 'dist/admin.js'
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js', '.ts']
