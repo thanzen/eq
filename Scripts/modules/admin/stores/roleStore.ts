@@ -42,6 +42,9 @@ export class RoleStore extends events.EventEmitter {
                     this.roles.push(action.role);
                     this.emit(ChangeEvent);
                     break;
+                case EventType.ROLES_RESET_ALL:
+                    this.emit(ChangeEvent);
+                    break;
                 default:
                     break;
             }

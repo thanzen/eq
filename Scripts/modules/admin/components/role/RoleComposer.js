@@ -33,11 +33,11 @@ var RoleComposer = React.createClass({
     },
 
     componentDidMount: function () {
-        store.RoleStoreInstance.addListener("change", this._onChange);
+        store.RoleStoreInstance.addListener(store.ChangeEvent, this._onChange);
     },
 
     componentWillUnmount: function () {
-        store.RoleStoreInstance.removeListener("change", this._onChange);
+        store.RoleStoreInstance.removeListener(store.ChangeEvent, this._onChange);
     },
 
     render: function () {
@@ -54,7 +54,7 @@ var RoleComposer = React.createClass({
         );
     },
     _onChange: function () {
-        //  this.setState({messages:store.TodoStoreInstance.getAll()});
+         this.setState({roles:store.RoleStoreInstance.getAll()});
     },
     btnClick: function () {
         this.setState(getItems());

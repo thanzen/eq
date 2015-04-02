@@ -48,6 +48,9 @@ var RoleStore = (function (_super) {
                     _this.roles.push(action.role);
                     _this.emit(exports.ChangeEvent);
                     break;
+                case EventType.ROLES_RESET_ALL:
+                    _this.emit(exports.ChangeEvent);
+                    break;
                 default:
                     break;
             }

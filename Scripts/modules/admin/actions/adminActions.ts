@@ -10,3 +10,6 @@ export var roleGetAll = function () {
             dispatcher.dispatch({ type: eventType.ROLES_RECEVIVE_ALL, roles:response});
         });
 }
+export var roleResetAll = function ():void {
+  dispatcher.dispatch({ type: eventType.ROLES_RESET_ALL});
+}
