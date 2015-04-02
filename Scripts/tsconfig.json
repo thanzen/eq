@@ -13,7 +13,6 @@
         "!./node_modules/**/*.ts"
     ],
     "files": [
-        "./appT.ts",
         "./dispatcher.ts",
         "./events/events.ts",
         "./libs/bluebird.d.ts",
@@ -32,9 +31,6 @@
         "./libs/flux.d.ts",
         "./libs/jquery.d.ts",
         "./modules/admin/actions/adminActions.ts",
-        "./modules/admin/components/role/RoleComposerT.ts",
-        "./modules/admin/components/role/RoleFormT.ts",
-        "./modules/admin/components/role/RoleListItemT.ts",
         "./modules/admin/eventType.ts",
         "./modules/admin/models/permission.ts",
         "./modules/admin/models/role.ts",
