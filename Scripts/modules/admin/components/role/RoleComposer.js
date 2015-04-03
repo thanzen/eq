@@ -24,7 +24,11 @@ function initData() {
 var RoleComposer = React.createClass({
     getRoleItem: function (role) {
         return (
-            <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick}/>
+            <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick}>
+            <ModalTrigger modal={<RoleForm id={this.state.selected.id} />}>
+                <Button bsStyle='primary' bsSize='small'>Edit</Button>
+            </ModalTrigger>
+            </RoleListItem>
         )
     },
 
@@ -47,8 +51,8 @@ var RoleComposer = React.createClass({
                 <ListGroup>
             {roles}
                 </ListGroup>
-                <ModalTrigger modal={<RoleForm id={this.state.selected.id} />}>
-                    <Button bsStyle='primary' bsSize='large'>Launch demo modal</Button>
+                <ModalTrigger modal={<RoleForm id={0} />}>
+                    <Button bsStyle='primary' bsSize='large'>Add</Button>
                 </ModalTrigger>
             </div>
         );

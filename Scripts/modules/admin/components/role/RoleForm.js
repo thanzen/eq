@@ -33,8 +33,8 @@ var RoleForm = React.createClass({
     },
 
     handleClose:function(){
-      this.props.onRequestHide();
       action.roleResetAll();
+      this.props.onRequestHide();
     },
 
     render: function () {
