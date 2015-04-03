@@ -10,6 +10,7 @@
   "dependencies": {
     "bluebird": "^2.9.14",
     "browserify": "^9.0.3",
+    "classnames": "^1.2.0",
     "flux": "^2.0.1",
     "immutable": "^3.7.1",
     "jquery": "^2.1.3",

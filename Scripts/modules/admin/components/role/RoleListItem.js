@@ -1,11 +1,11 @@
 ﻿var React = require('react/addons');
 var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
 var ListGroup = require('react-bootstrap/lib/ListGroup');
+var classNames = require("classnames");
 
-var cx = React.addons.classSet;
 function getClasses(role, currentSelected) {
-    return cx({
-        'active': role.id === currentSelected.id
+    return classNames({
+        active: role.id === currentSelected.id
     })
 };
 
@@ -24,7 +24,7 @@ var RoleListItem = React.createClass({
 
     render: function () {
         return (
-            <ListGroupItem className={getClasses(this.props.role,this.props.selected)} onClick={this.handleClick}>{this.props.role.name + '   ' + this.props.role.description}</ListGroupItem>
+            <ListGroupItem  className={getClasses(this.props.role,this.props.selected)} onClick={this.handleClick}>{this.props.role.name + '   ' + this.props.role.description}</ListGroupItem>
         );
     },
 

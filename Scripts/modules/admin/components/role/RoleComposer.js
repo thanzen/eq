@@ -24,7 +24,7 @@ function initData() {
 var RoleComposer = React.createClass({
     getRoleItem: function (role) {
         return (
-            <RoleListItem role={role} selected={this.state.selected} onClick={this.handleClick}/>
+            <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick}/>
         )
     },
 
