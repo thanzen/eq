@@ -4,9 +4,10 @@ var store = require("../../stores/roleStore");
 var RoleListItem = require('./RoleListItem');
 var Button = require('react-bootstrap/lib/Button');
 var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
-var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
 var ListGroup = require('react-bootstrap/lib/ListGroup');
 var RoleForm = require('./RoleForm');
+var dispatcher = require("../../../../dispatcher").Dispatcher;
+var EventType = require("../../eventType").EventType;
 
 //init data
 function initData() {
@@ -24,10 +25,7 @@ function initData() {
 var RoleComposer = React.createClass({
     getRoleItem: function (role) {
         return (
-            <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick}>
-            <ModalTrigger modal={<RoleForm id={this.state.selected.id} />}>
-                <Button bsStyle='primary' bsSize='small'>Edit</Button>
-            </ModalTrigger>
+            <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
             </RoleListItem>
         )
     },
@@ -49,25 +47,30 @@ var RoleComposer = React.createClass({
         return (
             <div>
                 <ListGroup>
-            {roles}
+                  {roles}
                 </ListGroup>
-                <ModalTrigger modal={<RoleForm id={0} />}>
-                    <Button bsStyle='primary' bsSize='large'>Add</Button>
-                </ModalTrigger>
+                <Button onClick={this.btnClick}>{'Test'}</Button>
+                <RoleForm/>
             </div>
         );
     },
+
     _onChange: function () {
          this.setState({roles:store.RoleStoreInstance.getAll()});
     },
+
     btnClick: function () {
-        this.setState(getItems());
+        dispatcher.dispatch({ type: EventType.UI_OPEN_ROLE_FORM, id:0});
     },
+
     handleClick: function (roleListItem) {
         this.setState({selected: roleListItem.props.role});
     },
-    handleDoubleClick: function () {
 
+    handleDoubleClick: function (roleListItem) {
+       this.handleClick(roleListItem);
+       dispatcher.dispatch({ type: EventType.UI_OPEN_ROLE_FORM, id:this.state.selected.id});
     }
 });
+
 module.exports = RoleComposer;

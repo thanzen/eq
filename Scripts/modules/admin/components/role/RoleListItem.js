@@ -24,7 +24,7 @@ var RoleListItem = React.createClass({
 
     render: function () {
         return (
-            <ListGroupItem  className={getClasses(this.props.role,this.props.selected)} onClick={this.handleClick}>
+            <ListGroupItem  className={getClasses(this.props.role,this.props.selected)} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
               {this.props.children}
               {this.props.role.name + '   ' + this.props.role.description}
             </ListGroupItem>
@@ -33,6 +33,10 @@ var RoleListItem = React.createClass({
 
     handleClick: function () {
         this.props.onClick(this);
+    },
+
+    handleDoubleClick: function () {
+       this.props.onDoubleClick(this);
     }
 });
 
