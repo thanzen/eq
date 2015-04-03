@@ -1,7 +1,6 @@
 ﻿var React = require('react/addons');
 var Modal = require('react-bootstrap/lib/Modal');
 var OverlayMixin = require('react-bootstrap/lib/OverlayMixin');
-var ModalTrigger = require('react-bootstrap/lib/ModalTrigger');
 var Button = require('react-bootstrap/lib/Button');
 var Role = require('../../models/role').Role;
 var store = require("../../stores/roleStore");

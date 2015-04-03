@@ -1,6 +1,5 @@
 ﻿var React = require('react/addons');
 var ListGroupItem = require('react-bootstrap/lib/ListGroupItem');
-var ListGroup = require('react-bootstrap/lib/ListGroup');
 var classNames = require("classnames");
 
 function getClasses(role, currentSelected) {
