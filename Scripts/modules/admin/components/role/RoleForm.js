@@ -10,8 +10,8 @@ var dispatcher = require("../../../../dispatcher").Dispatcher;
 var EventType = require("../../eventType").EventType;
 
 var RoleForm = React.createClass({
-    mixins: [OverlayMixin],
-    
+    mixins: [OverlayMixin,React.addons.LinkedStateMixin],
+
     getInitialState: function () {
         return {role: new Role(), isModalOpen: false};
     },
@@ -37,8 +37,13 @@ var RoleForm = React.createClass({
         });
     },
 
-    handleChange: function (event) {
+    handleNameChange: function (event) {
         this.state.role.name = event.target.value;
+        this.setState({role: this.state.role});
+    },
+
+    handleDescriptionChange: function (event) {
+        this.state.role.description = event.target.value;
         this.setState({role: this.state.role});
     },
 
@@ -76,12 +81,12 @@ var RoleForm = React.createClass({
             return <span/>;
         }
         return (
-            <Modal {...this.props} bsStyle='primary' title='Modal heading' animation={false}>
+            <Modal {...this.props} bsStyle='primary' title={this.state.role.id > 0?'Edit role':'New roles'} animation={false}>
                 <div className='modal-body'>
-                    <h4>{this.state.role.name}</h4>
-                    <input input type="text" value={this.state.role.name} onChange={this.handleChange}/>
-
-                    <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+                    {'Name:         '}<input input type="text" value={this.state.role.name} onChange={this.handleNameChange}/>
+                    <br/>
+                    <br/>
+                    {'Description:  '}<input input type="text" value={this.state.role.description} onChange={this.handleDescriptionChange}/>
                 </div>
                 <div className='modal-footer'>
                     <Button onClick={this.handleOk}>Ok</Button>
