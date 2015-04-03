@@ -23,8 +23,8 @@ var RoleForm = React.createClass({
     componentWillUnmount: function () {
     },
 
-    update:function(){
-      var role = store.RoleStoreInstance.getRole(this.props.id)
+    update:function(id){
+      var role = store.RoleStoreInstance.getRole(id)
       if (role) {
           role = JSON.parse(JSON.stringify(role));
       }
@@ -62,8 +62,7 @@ var RoleForm = React.createClass({
           //dispatcher.waitFor();
           switch (action.type) {
               case EventType.UI_OPEN_ROLE_FORM:
-                  self.props.id = action.id;
-                  self.update();
+                  self.update(action.id);
                   self.handleToggle();
                   break;
               default:
@@ -81,7 +80,7 @@ var RoleForm = React.createClass({
             return <span/>;
         }
         return (
-            <Modal {...this.props} bsStyle='primary' title={this.state.role.id > 0?'Edit role':'New roles'} animation={false}>
+            <Modal {...this.props} bsStyle='primary' title={this.state.role.id > 0?'Edit role':'New roles'} animation={true} onRequestHide={this.handleToggle}>
                 <div className='modal-body'>
                     {'Name:         '}<input input type="text" value={this.state.role.name} onChange={this.handleNameChange}/>
                     <br/>
