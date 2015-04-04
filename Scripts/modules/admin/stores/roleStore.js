@@ -40,15 +40,23 @@ var RoleStore = (function (_super) {
         var _this = this;
         return dispatcher.register(function (action) {
             switch (action.type) {
-                case EventType.ROLES_RECEVIVE_ALL:
+                case EventType.ROLE_RECEVIVE_ALL:
                     _this.receiveAll(action.roles);
                     _this.emit(exports.ChangeEvent);
                     break;
-                case EventType.ROLES_RECEVIVE_CREATE:
-                    _this.roles.push(action.role);
+                case EventType.ROLE_ADD:
+                    _this.roles = _this.roles.push(action.role);
                     _this.emit(exports.ChangeEvent);
                     break;
-                case EventType.ROLES_RESET_ALL:
+                case EventType.ROlE_UPDATE:
+                    _this.roles = _this.roles.withMutations(function (list) {
+                        list.forEach(function (r) {
+                            if (r.id == action.role.id) {
+                                r.description = action.role.description;
+                                r.name = action.role.name;
+                            }
+                        });
+                    });
                     _this.emit(exports.ChangeEvent);
                     break;
                 default:

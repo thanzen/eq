@@ -19,7 +19,7 @@ export class RoleStore extends events.EventEmitter {
     }
 
     getRole(id: number): role.Role {
-        var roles: Immutable.Iterable<number,role.Role>  = this.roles.filter(function(role) {
+        var roles: Immutable.Iterable<number, role.Role> = this.roles.filter(function(role) {
             return role.id === id;
         });
         return roles.count() > 0 ? roles.first() : new role.Role();
@@ -34,15 +34,23 @@ export class RoleStore extends events.EventEmitter {
         return dispatcher.register((action: any) => {
             //dispatcher.waitFor();
             switch (action.type) {
-                case EventType.ROLES_RECEVIVE_ALL:
+                case EventType.ROLE_RECEVIVE_ALL:
                     this.receiveAll(action.roles);
                     this.emit(ChangeEvent);
                     break;
-                case EventType.ROLES_RECEVIVE_CREATE:
-                    this.roles.push(action.role);
+                case EventType.ROLE_ADD:
+                    this.roles = this.roles.push(action.role);
                     this.emit(ChangeEvent);
                     break;
-                case EventType.ROLES_RESET_ALL:
+                case EventType.ROlE_UPDATE:
+                    this.roles = this.roles.withMutations(function(list) {
+                        list.forEach(r=> {
+                            if (r.id == action.role.id) {
+                                r.description = action.role.description;
+                                r.name = action.role.name;
+                            }
+                        })
+                    });
                     this.emit(ChangeEvent);
                     break;
                 default:

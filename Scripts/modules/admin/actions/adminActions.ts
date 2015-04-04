@@ -1,15 +1,26 @@
 ﻿import disp = require("../../../dispatcher");
 import et = require("../eventType");
 import admin = require("../services/admin");
+import role = require("../models/role");
 var service = admin.AdminService;
 var eventType = et.EventType;
 var dispatcher = disp.Dispatcher;
-export var roleGetAll = function () {
-  return  service.getAllRoles().then(
+export var roleGetAll = function() {
+    return service.getAllRoles().then(
         (response: any) => {
-            dispatcher.dispatch({ type: eventType.ROLES_RECEVIVE_ALL, roles:response});
+            dispatcher.dispatch({ type: eventType.ROLE_RECEVIVE_ALL, roles: response });
         });
 }
-export var roleResetAll = function ():void {
-  dispatcher.dispatch({ type: eventType.ROLES_RESET_ALL});
+export var roleSave = function(role: role.Role) {
+    return service.saveRole(role).then(
+        (response: role.Role) => {
+            if (role.id > 0) {
+                dispatcher.dispatch({ type: eventType.ROlE_UPDATE, role: role });
+            } else {
+                role = response;
+                dispatcher.dispatch({ type: eventType.ROLE_ADD, role: role });
+            }
+        }).catch(function(e) {
+        console.log(e.statusText);
+    })
 }

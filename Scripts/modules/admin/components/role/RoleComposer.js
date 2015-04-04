@@ -48,7 +48,7 @@ var RoleComposer = React.createClass({
                 <ListGroup>
                   {roles}
                 </ListGroup>
-                <Button onClick={this.btnClick}>{'Test'}</Button>
+                <Button onClick={this.btnClick}>{'Add'}</Button>
                 <RoleForm/>
             </div>
         );

@@ -48,6 +48,7 @@ var RoleForm = React.createClass({
 
     handleOk: function () {
         //todo: add data write back once it successful or maybe action need ed here.
+        action.roleSave(this.state.role);
         this.handleToggle();
     },
 
