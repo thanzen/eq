@@ -15,7 +15,7 @@ type AdminApiController struct {
 	base.BaseController
 }
 
-type UserFuzzSearch struct{
+type UserFuzzSearchParam struct{
 	Query string `json:"query"`
 	RoleId int64 `json:"roleId"`
 	Offset int64 `json:"offset"`
@@ -23,9 +23,14 @@ type UserFuzzSearch struct{
 	IncludeTotal bool `json:"includeTotal"`
 }
 
+type UserFuzzSearchResponse struct{
+	Users []*user.User `json:"users"`
+	Total int64 `json:"total"`
+}
+
 func (this *AdminApiController) GetUsers() {
 	this.CheckPermission(permissions.UserFuzzSearch)
-	var param UserFuzzSearch
+	var param UserFuzzSearchParam
 	json.Unmarshal(this.Ctx.Input.RequestBody, &param)
 	var err error
 	beego.Info(param)
@@ -39,8 +44,9 @@ func (this *AdminApiController) GetUsers() {
 		this.Ctx.Abort(500, "invalid limit")
 	}
 	var users []*user.User
-	this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit,param.IncludeTotal)
-	this.Data["json"] = users
+	n,_ := this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit,param.IncludeTotal)
+	resp := UserFuzzSearchResponse{Users:users,Total:n}
+	this.Data["json"] = resp
 	this.ServeJson(true)
 }
 
@@ -49,7 +55,6 @@ func (this *AdminApiController) Update() {
 	this.CheckPermission(permissions.UserAdminUpdate)
 	var u user.User
 	json.Unmarshal(this.Ctx.Input.RequestBody, &u)
-	beego.Info(u)
 	var err error
 	if u.Id > 0 {
 		err = this.UserService.Update(&u, "Firstname", "Lastname", "Active", "Email", "Company")

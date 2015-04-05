@@ -344,19 +344,19 @@ func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId in
         n,err = db.Raw(sql,roleId,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
 		if includeTotal {
 			n,err = db.Raw(countSql,roleId,text,text,text,text,text,text,text).ValuesList(&list)
-			n,_ = strconv.Atoi(list[0][0].(string))
+			n,_ = strconv.ParseInt(list[0][0].(string),10,64)
 		}
     }else {
         n,err = db.Raw(sql,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
 		if includeTotal {
 			n,err = db.Raw(countSql,text,text,text,text,text,text,text).ValuesList(&list)
-			n,_ = strconv.Atoi(list[0][0].(string))
+			n,_ = strconv.ParseInt(list[0][0].(string),10,64)
 		}
     }
     if err!=nil{
         beego.Info(err)
     }
-	return 0, err
+	return n, err
 }
 
 
