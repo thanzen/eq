@@ -37,6 +37,7 @@
         "./modules/admin/models/user.ts",
         "./modules/admin/services/admin.ts",
         "./modules/admin/stores/roleStore.ts",
-        "./modules/admin/stores/userStore.ts"
+        "./modules/admin/stores/userStore.ts",
+        "./setting.ts"
     ]
 }

@@ -1,4 +1,5 @@
 ﻿var ChatApp = require("./modules/admin/components/role/RoleComposer");
+var setting = require("./setting");
 var action = require("./modules/admin/actions/adminActions");
 var React = require('react');
 var Promise = require("bluebird");
@@ -7,7 +8,7 @@ var Promise = require("bluebird");
 
 Promise.props({
   roles:action.roleGetAll(),
-  users:action.userGetList({query:"a",roleId:2,offset:0,limit:50})
+  users:action.userGetList({query:"a",roleId:2,offset:0,limit:setting.TableLimit,includeTotal:true})
 }).then(function(result){
   React.render(
       <ChatApp />,

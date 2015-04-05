@@ -11,6 +11,7 @@ export interface UserListSearchParam {
     roleId: number;
     offset: number;
     limit: number;
+    includeTotal: boolean;
 }
 
 export class AdminService {

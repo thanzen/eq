@@ -26,17 +26,21 @@ var UserTable = React.createClass({
     },
 
     render: function () {
+      var rows = this.props.users.map(function(user){
+        return getRow(user);
+      });
         return (
             <Table>
                 <thead>
                 <tr>
-                    <th>{"Username"}</th>
                     <th>{"First Name"}</th>
                     <th>{"Last Name"}</th>
+                    <th>{"Username"}</th>
                     <th>{"Email"}</th>
                     <th>{"Company"}</th>
                 </tr>
                 </thead>
+                {rows}
             </Table>
         );
     }

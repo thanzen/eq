@@ -20,30 +20,8 @@ type UserFuzzSearch struct{
 	RoleId int64 `json:"roleId"`
 	Offset int64 `json:"offset"`
 	Limit int64 `json:"limit"`
+	IncludeTotal bool `json:"includeTotal"`
 }
-
-//func (this *AdminApiController) GetUsers() {
-//	this.CheckPermission(permissions.UserFuzzSearch)
-//	query := this.Ctx.Input.Param(":query")
-//	var roleId, offset, limit int64
-//	var err error
-//	roleId, err = this.GetInt64(":roleId")
-//	if err != nil || offset < 0 {
-//		this.Ctx.Abort(500, "invalid role id")
-//	}
-//	offset, err = this.GetInt64(":offset")
-//	if err != nil || offset < 0 {
-//		this.Ctx.Abort(500, "invalid offset")
-//	}
-//	limit, err = this.GetInt64(":limit")
-//	if err != nil || limit < 1 {
-//		this.Ctx.Abort(500, "invalid limit")
-//	}
-//	var users []*user.User
-//	this.UserService.FuzzySearch(&users, query, roleId, offset, limit)
-//	this.Data["json"] = users
-//	this.ServeJson(true)
-//}
 
 func (this *AdminApiController) GetUsers() {
 	this.CheckPermission(permissions.UserFuzzSearch)
@@ -57,11 +35,11 @@ func (this *AdminApiController) GetUsers() {
 	if err != nil || param.Offset < 0 {
 		this.Ctx.Abort(500, "invalid offset")
 	}
-	if err != nil || param.Limit < 1 {
+	if err != nil || param.Limit < 0 {
 		this.Ctx.Abort(500, "invalid limit")
 	}
 	var users []*user.User
-	this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit)
+	this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit,param.IncludeTotal)
 	this.Data["json"] = users
 	this.ServeJson(true)
 }

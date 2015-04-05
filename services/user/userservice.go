@@ -12,6 +12,8 @@ import (
 	"github.com/thanzen/eq/setting"
 	"github.com/thanzen/eq/utils"
 	"strings"
+	"math"
+	"strconv"
 )
 
 const USER_ID_CACHE_PATTERN = "eq_user_id_%d_deleted_%t"
@@ -314,25 +316,42 @@ func (this *UserService) HasPermission(u *user.User, permission string) bool {
 	return false
 }
 
-func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId int64, offset int64, limit int64) (n int64,err error) {
+func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId int64, offset int64, limit int64, includeTotal bool) (n int64,err error) {
     //todo: evaluate return value n for total number with a extra flag, currently return 0 only, we can
     // make another query to get total, even using go routine to perform concurrent query
-	if limit <= 0 || offset < 0 {
+	if limit < 0 || offset < 0 {
 		return 0, errors.New("invalid range")
 	}
-    sql:="SELECT user_info.id, user_name,email,first_name,last_name,cell_phone,office_phone,company,active from user_info"
-	if roleId > 0 {
-        sql+=" INNER JOIN user_role ON user_info.Id = user_role.user_info_id AND user_role.role_id = ?"
+	if limit == 0{
+		limit =  math.MaxInt64 -1
 	}
-    sql += " WHERE UPPER(user_name) LIKE UPPER(?) OR UPPER(email) LIKE UPPER(?)"
-    sql +=" OR UPPER(first_name) LIKE UPPER(?) OR UPPER(last_name) LIKE UPPER(?)"
-    sql+=" OR UPPER(cell_phone) LIKE UPPER(?) OR UPPER(office_phone) LIKE UPPER(?)"
-    sql+= " OR UPPER(company) LIKE UPPER(?) ORDER BY id DESC OFFSET ? LIMIT ?"
+	countSql := "SELECT count(1) from user_info"
+    sql:="SELECT user_info.id, user_name,email,first_name,last_name,cell_phone,office_phone,company,active from user_info"
+	condition := ""
+	if roleId > 0 {
+		condition =" INNER JOIN user_role ON user_info.Id = user_role.user_info_id AND user_role.role_id = ?"
+	}
+	condition += " WHERE UPPER(user_name) LIKE UPPER(?) OR UPPER(email) LIKE UPPER(?)"
+	condition +=" OR UPPER(first_name) LIKE UPPER(?) OR UPPER(last_name) LIKE UPPER(?)"
+	condition +=" OR UPPER(cell_phone) LIKE UPPER(?) OR UPPER(office_phone) LIKE UPPER(?)  OR UPPER(company) LIKE UPPER(?)"
+	sql = sql + condition
+	countSql = countSql + condition
+    sql += " ORDER BY id DESC OFFSET ? LIMIT ?"
     text = "%"+text+"%"
+	var list []orm.ParamsList
+	db := orm.NewOrm()
     if roleId > 0 {
-        n,err =orm.NewOrm().Raw(sql,roleId,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
+        n,err = db.Raw(sql,roleId,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
+		if includeTotal {
+			n,err = db.Raw(countSql,roleId,text,text,text,text,text,text,text).ValuesList(&list)
+			n,_ = strconv.Atoi(list[0][0].(string))
+		}
     }else {
-        n,err =orm.NewOrm().Raw(sql,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
+        n,err = db.Raw(sql,text,text,text,text,text,text,text,offset,limit).QueryRows(users)
+		if includeTotal {
+			n,err = db.Raw(countSql,text,text,text,text,text,text,text).ValuesList(&list)
+			n,_ = strconv.Atoi(list[0][0].(string))
+		}
     }
     if err!=nil{
         beego.Info(err)
