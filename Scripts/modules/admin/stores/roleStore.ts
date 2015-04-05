@@ -8,6 +8,7 @@ import Immutable = require('immutable');
 var EventType = at.EventType;
 var dispatcher = disp.Dispatcher;
 export const ChangeEvent = "CHANGE";
+
 export class RoleStore extends events.EventEmitter {
     constructor(private roles: Immutable.List<role.Role> = Immutable.List<role.Role>()) {
         super();

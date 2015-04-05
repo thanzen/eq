@@ -4,7 +4,8 @@
     ROLE_ADD:"ROLE_ADD",
     ROlE_UPDATE:"ROLE_UPDATE",
 
-
+//user related event types
+    USER_GET_LIST:"USER_GET_LIST",
 
 
 

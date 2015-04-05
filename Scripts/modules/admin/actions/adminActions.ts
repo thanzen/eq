@@ -5,12 +5,14 @@ import role = require("../models/role");
 var service = admin.AdminService;
 var eventType = et.EventType;
 var dispatcher = disp.Dispatcher;
+
 export var roleGetAll = function() {
     return service.getAllRoles().then(
         (response: any) => {
             dispatcher.dispatch({ type: eventType.ROLE_RECEVIVE_ALL, roles: response });
         });
 }
+
 export var roleSave = function(role: role.Role) {
     return service.saveRole(role).then(
         (response: role.Role) => {
@@ -23,4 +25,12 @@ export var roleSave = function(role: role.Role) {
         }).catch(function(e) {
         console.log(e.statusText);
     })
+}
+
+
+export var userGetList = function(param: admin.UserListSearchParam) {
+    return service.getUserList(param).then(
+        (response: any) => {
+            dispatcher.dispatch({ type: eventType.USER_GET_LIST, users: response, roleId: param.roleId });
+        });
 }

@@ -15,28 +15,58 @@ type AdminApiController struct {
 	base.BaseController
 }
 
+type UserFuzzSearch struct{
+	Query string `json:"query"`
+	RoleId int64 `json:"roleId"`
+	Offset int64 `json:"offset"`
+	Limit int64 `json:"limit"`
+}
+
+//func (this *AdminApiController) GetUsers() {
+//	this.CheckPermission(permissions.UserFuzzSearch)
+//	query := this.Ctx.Input.Param(":query")
+//	var roleId, offset, limit int64
+//	var err error
+//	roleId, err = this.GetInt64(":roleId")
+//	if err != nil || offset < 0 {
+//		this.Ctx.Abort(500, "invalid role id")
+//	}
+//	offset, err = this.GetInt64(":offset")
+//	if err != nil || offset < 0 {
+//		this.Ctx.Abort(500, "invalid offset")
+//	}
+//	limit, err = this.GetInt64(":limit")
+//	if err != nil || limit < 1 {
+//		this.Ctx.Abort(500, "invalid limit")
+//	}
+//	var users []*user.User
+//	this.UserService.FuzzySearch(&users, query, roleId, offset, limit)
+//	this.Data["json"] = users
+//	this.ServeJson(true)
+//}
+
 func (this *AdminApiController) GetUsers() {
 	this.CheckPermission(permissions.UserFuzzSearch)
-	query := this.Ctx.Input.Param(":query")
-	var roleId, offset, limit int64
+	var param UserFuzzSearch
+	json.Unmarshal(this.Ctx.Input.RequestBody, &param)
 	var err error
-	roleId, err = this.GetInt64(":roleId")
-	if err != nil || offset < 0 {
+	beego.Info(param)
+	if err != nil || param.RoleId < 0 {
 		this.Ctx.Abort(500, "invalid role id")
 	}
-	offset, err = this.GetInt64(":offset")
-	if err != nil || offset < 0 {
+	if err != nil || param.Offset < 0 {
 		this.Ctx.Abort(500, "invalid offset")
 	}
-	limit, err = this.GetInt64(":limit")
-	if err != nil || limit < 1 {
+	if err != nil || param.Limit < 1 {
 		this.Ctx.Abort(500, "invalid limit")
 	}
 	var users []*user.User
-	this.UserService.FuzzySearch(&users, query, roleId, offset, limit)
+	this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit)
 	this.Data["json"] = users
 	this.ServeJson(true)
 }
+
+
 func (this *AdminApiController) Update() {
 	this.CheckPermission(permissions.UserAdminUpdate)
 	var u user.User

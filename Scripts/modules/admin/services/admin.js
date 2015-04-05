@@ -13,6 +13,15 @@ var AdminService = (function () {
             dataType: "json"
         }));
     };
+    AdminService.getUserList = function (searchParm) {
+        var url = "/api/admin/user/getusers";
+        return Promise.resolve($.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify(searchParm),
+            dataType: "json"
+        }));
+    };
     return AdminService;
 })();
 exports.AdminService = AdminService;
