@@ -8,7 +8,7 @@ var Promise = require("bluebird");
 
 Promise.props({
   roles:action.roleGetAll(),
-  users:action.userGetList({query:"a",roleId:2,offset:0,limit:setting.TableLimit,includeTotal:true})
+  users:action.userGetList({query:"",roleId:0,offset:0,limit:setting.TableLimit,includeTotal:true})
 }).then(function(result){
   React.render(
       <ChatApp />,

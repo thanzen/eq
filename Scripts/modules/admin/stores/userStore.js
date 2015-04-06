@@ -39,6 +39,9 @@ var UserStore = (function (_super) {
         return dispatcher.register(function (action) {
             switch (action.type) {
                 case EventType.USER_GET_LIST:
+                    if (action.users == null) {
+                        action.users = [];
+                    }
                     _this.users = _this.users.set(action.roleId, action.users);
                     _this.emit(exports.ChangeEvent);
                     break;

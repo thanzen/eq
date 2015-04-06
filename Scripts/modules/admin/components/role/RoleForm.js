@@ -9,7 +9,7 @@ var dispatcher = require("../../../../dispatcher").Dispatcher;
 var EventType = require("../../eventType").EventType;
 
 var RoleForm = React.createClass({
-    mixins: [OverlayMixin,React.addons.LinkedStateMixin],
+    mixins: [OverlayMixin, React.addons.LinkedStateMixin],
 
     getInitialState: function () {
         return {role: new Role(), isModalOpen: false};
@@ -22,12 +22,12 @@ var RoleForm = React.createClass({
     componentWillUnmount: function () {
     },
 
-    update:function(id){
-      var role = store.RoleStoreInstance.getRole(id)
-      if (role) {
-          role = JSON.parse(JSON.stringify(role));
-      }
-      this.setState({role: role})
+    update: function (id) {
+        var role = store.RoleStoreInstance.getRole(id)
+        if (role) {
+            role = JSON.parse(JSON.stringify(role));
+        }
+        this.setState({role: role})
     },
 
     handleToggle: function () {
@@ -57,18 +57,18 @@ var RoleForm = React.createClass({
     },
 
     registerEvents: function () {
-      var self = this;
-      dispatcher.register(function (action) {
-          //dispatcher.waitFor();
-          switch (action.type) {
-              case EventType.UI_OPEN_ROLE_FORM:
-                  self.update(action.id);
-                  self.handleToggle();
-                  break;
-              default:
-                  break;
-          }
-      });
+        var self = this;
+        dispatcher.register(function (action) {
+            //dispatcher.waitFor();
+            switch (action.type) {
+                case EventType.UI_OPEN_ROLE_FORM:
+                    self.update(action.id);
+                    self.handleToggle();
+                    break;
+                default:
+                    break;
+            }
+        });
     },
 
     render: function () {
@@ -80,12 +80,15 @@ var RoleForm = React.createClass({
             return <span/>;
         }
         return (
-            <Modal {...this.props} bsStyle='primary' title={this.state.role.id > 0?'Edit role':'New roles'} animation={true} onRequestHide={this.handleToggle}>
+            <Modal {...this.props} bsStyle='primary' title={this.state.role.id > 0?'Edit role':'New role'}
+                                   animation={true} onRequestHide={this.handleToggle}>
                 <div className='modal-body'>
-                    {'Name:         '}<input input type="text" value={this.state.role.name} onChange={this.handleNameChange}/>
+                    {'Name:         '}<input input type="text" value={this.state.role.name}
+                                             onChange={this.handleNameChange}/>
                     <br/>
                     <br/>
-                    {'Description:  '}<input input type="text" value={this.state.role.description} onChange={this.handleDescriptionChange}/>
+                    {'Description:  '}<input input type="text" value={this.state.role.description}
+                                             onChange={this.handleDescriptionChange}/>
                 </div>
                 <div className='modal-footer'>
                     <Button onClick={this.handleOk}>Ok</Button>

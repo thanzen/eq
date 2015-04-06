@@ -3,7 +3,7 @@ package user
 import "time"
 
 type User struct {
-	Id               int64     `json:"id" orm:"column(id);auto;pk"`
+	Id               int64     `json:"id,string" orm:"column(id);auto;pk"`
 	Username         string    `json:"username" orm:"column(user_name)"`
 	Firstname        string    `json:"firstname" orm:"column(first_name)"`
 	Lastname         string    `json:"lastname" orm:"column(last_name)"`

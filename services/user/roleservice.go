@@ -19,6 +19,7 @@ func (this RoleService) Insert(r *user.Role) error {
 	if _, err := orm.NewOrm().Insert(r); err != nil {
 		return err
 	}
+	cachemanager.Delete(ROLE_ALL_KEY)
 	return nil
 }
 

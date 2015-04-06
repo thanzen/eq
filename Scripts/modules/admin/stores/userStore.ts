@@ -34,6 +34,9 @@ export class UserStore extends events.EventEmitter {
             //dispatcher.waitFor();
             switch (action.type) {
                 case EventType.USER_GET_LIST:
+                    if (action.users == null) {
+                        action.users = [];
+                    }
                     this.users = this.users.set(action.roleId, action.users);
                     this.emit(ChangeEvent);
                     break;
