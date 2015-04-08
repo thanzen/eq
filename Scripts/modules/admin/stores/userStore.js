@@ -25,10 +25,15 @@ var UserStore = (function (_super) {
     UserStore.prototype.getListByRoleId = function (roleId) {
         if (!this.users.has(roleId))
             return [];
-        return this.users.get(roleId);
+        return this.users.get(roleId).users;
+    };
+    UserStore.prototype.getTotalByRoleId = function (roleId) {
+        if (!this.users.has(roleId))
+            return 0;
+        return this.users.get(roleId).total;
     };
     UserStore.prototype.getUser = function (userId, roleId) {
-        var ru = this.users.get(roleId);
+        var ru = this.users.get(roleId).users;
         var users = ru.filter(function (user) {
             return user.id === userId;
         });
@@ -41,8 +46,9 @@ var UserStore = (function (_super) {
                 case EventType.USER_GET_LIST:
                     if (action.users == null) {
                         action.users = [];
+                        action.total = 0;
                     }
-                    _this.users = _this.users.set(action.roleId, action.users);
+                    _this.users = _this.users.set(action.roleId, { users: action.users, total: action.total });
                     _this.emit(exports.ChangeEvent);
                     break;
                 default:

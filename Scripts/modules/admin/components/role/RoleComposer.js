@@ -12,7 +12,7 @@ var EventType = require("../../eventType").EventType;
 var Role = require('../../models/role').Role;
 var action = require("../../actions/adminActions");
 var setting = require("../../../../setting");
-
+var util = require("../../../../libs/util");
 
 //init data
 function initData() {
@@ -23,8 +23,11 @@ function initData() {
     } else {
         first = {id: -1, name: '', description: ''}
     }
+    var maxPage = util.calculatePage(setting.TableLimit,userStore.UserStoreInstance.getTotalByRoleId(0))
+    var userTableState = {currentPage:1,maxPage:maxPage};
+
     var users = userStore.UserStoreInstance.getListByRoleId(0);
-    return {roles: rs, selected: first, users: users};
+    return {roles: rs, selected: first, users: users,tableSetting:userTableState};
 }
 
 function prepareAllRoles() {
@@ -39,6 +42,7 @@ function prepareAllRoles() {
 
 
 var RoleComposer = React.createClass({
+
     getRoleItem: function (role) {
         return (
             <RoleListItem key={role.id} role={role} selected={this.state.selected} onClick={this.handleClick}
@@ -94,6 +98,36 @@ var RoleComposer = React.createClass({
         dispatcher.dispatch({type: EventType.UI_OPEN_ROLE_FORM, id: this.state.selected.id});
     },
 
+    handlePrevClick:function(){
+      var currentPage=this.state.tableSetting.currentPage;
+      var maxPage =this.state.tableSetting.maxPage;
+      if(currentPage > 1){
+        this.setState({tableSetting:{currentPage:currentPage-1,maxPage:maxPage}});
+        action.userGetList({
+            query: "",
+            roleId: this.state.selected.id,
+            offset: (currentPage-2)*setting.TableLimit,
+            limit: setting.TableLimit,
+            includeTotal: true
+        });
+      }
+    },
+
+    handleNextClick:function(){
+      var currentPage=this.state.tableSetting.currentPage;
+      var maxPage =this.state.tableSetting.maxPage;
+      if(currentPage < maxPage){
+        this.setState({tableSetting:{currentPage:currentPage+1,maxPage:maxPage}});
+        action.userGetList({
+            query: "",
+            roleId: this.state.selected.id,
+            offset: currentPage*setting.TableLimit,
+            limit: setting.TableLimit,
+            includeTotal: true
+        });
+      }
+    },
+
     render: function () {
         var roles = this.state.roles.map(this.getRoleItem);
         return (
@@ -102,7 +136,8 @@ var RoleComposer = React.createClass({
                     {roles}
                 </ListGroup>
                 <Button onClick={this.btnClick}>{'Add'}</Button>
-                <UserTable users={this.state.users}/>
+                <UserTable users={this.state.users} currentPage={this.state.tableSetting.currentPage} maxPage={this.state.tableSetting.maxPage}
+                 onPrevClick={this.handlePrevClick} onNextClick={this.handleNextClick}/>
                 <RoleForm/>
             </div>
         );

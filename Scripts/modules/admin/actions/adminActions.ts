@@ -31,6 +31,6 @@ export var roleSave = function(role: role.Role) {
 export var userGetList = function(param: admin.UserListSearchParam) {
     return service.getUserList(param).then(
         (response: any) => {
-            dispatcher.dispatch({ type: eventType.USER_GET_LIST, users: response.users, roleId: param.roleId });
+            dispatcher.dispatch({ type: eventType.USER_GET_LIST, users: response.users, roleId: param.roleId, total:response.total });
         });
 }

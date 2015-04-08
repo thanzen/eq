@@ -30,6 +30,7 @@
         "./libs/definitions/react/react-global.d.ts",
         "./libs/definitions/react/react-jsx.d.ts",
         "./libs/definitions/react/react.d.ts",
+        "./libs/util.ts",
         "./modules/admin/actions/adminActions.ts",
         "./modules/admin/eventType.ts",
         "./modules/admin/models/permission.ts",

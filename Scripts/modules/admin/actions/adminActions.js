@@ -24,6 +24,6 @@ exports.roleSave = function (role) {
 };
 exports.userGetList = function (param) {
     return service.getUserList(param).then(function (response) {
-        dispatcher.dispatch({ type: eventType.USER_GET_LIST, users: response.users, roleId: param.roleId });
+        dispatcher.dispatch({ type: eventType.USER_GET_LIST, users: response.users, roleId: param.roleId, total: response.total });
     });
 };
