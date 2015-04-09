@@ -8,7 +8,7 @@ var UserRow = require("./UserRow");
 function getRow(user) {
     return <UserRow key={user.id} user={user}/>;
 }
-function getButtons(prev,next){
+function getButtons(prev, next) {
 
 }
 
@@ -29,12 +29,12 @@ var UserTable = React.createClass({
     componentWillUnmount: function () {
     },
 
-    handlePrevClick:function(){
-      this.props.onPrevClick();
+    handlePrevClick: function () {
+        this.props.onPrevClick();
     },
 
-    handleNextClick:function(){
-      this.props.onNextClick();
+    handleNextClick: function () {
+        this.props.onNextClick();
     },
 
     render: function () {
@@ -46,23 +46,25 @@ var UserTable = React.createClass({
         }
 
         return (
-          <div>
-            <Table striped bordered condensed hover responsive>
-                <thead>
-                <tr>
-                    <th>{"First Name"}</th>
-                    <th>{"Last Name"}</th>
-                    <th>{"Username"}</th>
-                    <th>{"Email"}</th>
-                    <th>{"Company"}</th>
-                </tr>
-                </thead>
-                <tbody>
-                  {rows}
-                </tbody>
-            </Table>
-            {this.props.currentPage > 1? (<Button bsStyle='link' onClick={this.handlePrevClick}>prev</Button>):null}
-            {this.props.currentPage < this.props.maxPage?  (<Button bsStyle='link' onClick={this.handleNextClick}>next</Button>):null}
+            <div>
+                <Table striped bordered condensed hover responsive>
+                    <thead>
+                    <tr>
+                        <th>{"First Name"}</th>
+                        <th>{"Last Name"}</th>
+                        <th>{"Username"}</th>
+                        <th>{"Email"}</th>
+                        <th>{"Company"}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {rows}
+                    </tbody>
+                </Table>
+                {this.props.currentPage > 1 ? (
+                    <Button bsStyle='link' onClick={this.handlePrevClick}>prev</Button>) : null}
+                {this.props.currentPage < this.props.maxPage ? (
+                    <Button bsStyle='link' onClick={this.handleNextClick}>next</Button>) : null}
             </div>
 
         );

@@ -24,11 +24,11 @@ function initData() {
     } else {
         first = {id: -1, name: '', description: ''}
     }
-    var maxPage = util.calculatePage(setting.TableLimit,userStore.UserStoreInstance.getTotalByRoleId(0))
-    var userTableState = {currentPage:1,maxPage:maxPage};
+    var maxPage = util.calculatePage(setting.TableLimit, userStore.UserStoreInstance.getTotalByRoleId(0))
+    var userTableState = {currentPage: 1, maxPage: maxPage};
 
     var users = userStore.UserStoreInstance.getListByRoleId(0);
-    return {roles: rs, selected: first, users: users,tableSetting:userTableState};
+    return {roles: rs, selected: first, users: users, tableSetting: userTableState};
 }
 
 function prepareAllRoles() {
@@ -42,11 +42,9 @@ function prepareAllRoles() {
 }
 
 
-
-
 var RoleComposer = React.createClass({
 
-    prevSearchText:"",
+    prevSearchText: "",
 
     getRoleItem: function (role) {
         return (
@@ -87,29 +85,29 @@ var RoleComposer = React.createClass({
 
     handleClick: function (roleListItem) {
         if (roleListItem.id !== this.state.selected.id) {
-          this.search(1,this.prevSearchText);
+            this.search(1, this.prevSearchText);
         }
         this.setState({selected: roleListItem.props.role});
     },
 
-    handleSearchClick:function(text){
-      if(this.prevSearchText == text) return;
-      var self = this;
-      this.prevSearchText = text;
-     this.search(1,text);
+    handleSearchClick: function (text) {
+        if (this.prevSearchText == text) return;
+        var self = this;
+        this.prevSearchText = text;
+        this.search(1, text);
     },
-    search: function (currentPage,query){
-      var self = this;
-      action.userGetList({
-          query: query,
-          roleId: this.state.selected.id,
-          offset: (currentPage -1)*setting.TableLimit,
-          limit: setting.TableLimit,
-          includeTotal: true
-      }).then(function(){
-        var maxPage = util.calculatePage(setting.TableLimit,userStore.UserStoreInstance.getTotalByRoleId(self.state.selected.id));
-        self.setState({tableSetting:{currentPage:currentPage,maxPage:maxPage}});
-      });
+    search: function (currentPage, query) {
+        var self = this;
+        action.userGetList({
+            query: query,
+            roleId: this.state.selected.id,
+            offset: (currentPage - 1) * setting.TableLimit,
+            limit: setting.TableLimit,
+            includeTotal: true
+        }).then(function () {
+            var maxPage = util.calculatePage(setting.TableLimit, userStore.UserStoreInstance.getTotalByRoleId(self.state.selected.id));
+            self.setState({tableSetting: {currentPage: currentPage, maxPage: maxPage}});
+        });
     },
 
     handleDoubleClick: function (roleListItem) {
@@ -117,12 +115,12 @@ var RoleComposer = React.createClass({
         dispatcher.dispatch({type: EventType.UI_OPEN_ROLE_FORM, id: this.state.selected.id});
     },
 
-    handlePrevClick:function(){
-      this.search(this.state.tableSetting.currentPage - 1,this.prevSearchText);
+    handlePrevClick: function () {
+        this.search(this.state.tableSetting.currentPage - 1, this.prevSearchText);
     },
 
-    handleNextClick:function(){
-      this.search(this.state.tableSetting.currentPage + 1,this.prevSearchText);
+    handleNextClick: function () {
+        this.search(this.state.tableSetting.currentPage + 1, this.prevSearchText);
     },
 
     render: function () {
@@ -133,8 +131,9 @@ var RoleComposer = React.createClass({
                     {roles}
                 </ListGroup>
                 <Button onClick={this.btnClick}>{'Add'}</Button>
-                <UserTable users={this.state.users} currentPage={this.state.tableSetting.currentPage} maxPage={this.state.tableSetting.maxPage}
-                 onPrevClick={this.handlePrevClick} onNextClick={this.handleNextClick}/>
+                <UserTable users={this.state.users} currentPage={this.state.tableSetting.currentPage}
+                           maxPage={this.state.tableSetting.maxPage}
+                           onPrevClick={this.handlePrevClick} onNextClick={this.handleNextClick}/>
                 <RoleForm/>
                 <SearchBar onClick={this.handleSearchClick}/>
             </div>

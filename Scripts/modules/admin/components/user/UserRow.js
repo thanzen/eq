@@ -2,8 +2,7 @@ var React = require('react/addons');
 var classNames = require("classnames");
 
 function getClasses(role, currentSelected) {
-    return classNames({
-    })
+    return classNames({})
 };
 
 var UserRole = React.createClass({
