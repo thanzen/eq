@@ -13,6 +13,7 @@ var Role = require('../../models/role').Role;
 var action = require("../../actions/adminActions");
 var setting = require("../../../../setting");
 var util = require("../../../../libs/util");
+var SearchBar = require("./SearchBar");
 
 //init data
 function initData() {
@@ -42,6 +43,8 @@ function prepareAllRoles() {
 
 
 var RoleComposer = React.createClass({
+
+    prevSearchText:"",
 
     getRoleItem: function (role) {
         return (
@@ -93,6 +96,22 @@ var RoleComposer = React.createClass({
         this.setState({selected: roleListItem.props.role});
     },
 
+    handleSearchClick:function(text){
+      if(this.prevSearchText == text) return;
+      var self = this;
+      this.prevSearchText = text;
+      action.userGetList({
+          query: text,
+          roleId: this.state.selected.id,
+          offset: 0,
+          limit: setting.TableLimit,
+          includeTotal: true
+      }).then(function(){
+        var maxPage = util.calculatePage(setting.TableLimit,userStore.UserStoreInstance.getTotalByRoleId(self.state.selected.id));
+        self.setState({tableSetting:{currentPage:1,maxPage:maxPage}});
+      });
+    },
+
     handleDoubleClick: function (roleListItem) {
         this.handleClick(roleListItem);
         dispatcher.dispatch({type: EventType.UI_OPEN_ROLE_FORM, id: this.state.selected.id});
@@ -139,6 +158,7 @@ var RoleComposer = React.createClass({
                 <UserTable users={this.state.users} currentPage={this.state.tableSetting.currentPage} maxPage={this.state.tableSetting.maxPage}
                  onPrevClick={this.handlePrevClick} onNextClick={this.handleNextClick}/>
                 <RoleForm/>
+                <SearchBar onClick={this.handleSearchClick}/>
             </div>
         );
     }
