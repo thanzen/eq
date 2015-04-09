@@ -42,6 +42,8 @@ function prepareAllRoles() {
 }
 
 
+
+
 var RoleComposer = React.createClass({
 
     prevSearchText:"",
@@ -85,13 +87,7 @@ var RoleComposer = React.createClass({
 
     handleClick: function (roleListItem) {
         if (roleListItem.id !== this.state.selected.id) {
-            action.userGetList({
-                query: "",
-                roleId: roleListItem.props.role.id,
-                offset: 0,
-                limit: setting.TableLimit,
-                includeTotal: true
-            });
+          this.search(1,this.prevSearchText);
         }
         this.setState({selected: roleListItem.props.role});
     },
@@ -100,15 +96,19 @@ var RoleComposer = React.createClass({
       if(this.prevSearchText == text) return;
       var self = this;
       this.prevSearchText = text;
+     this.search(1,text);
+    },
+    search: function (currentPage,query){
+      var self = this;
       action.userGetList({
-          query: text,
+          query: query,
           roleId: this.state.selected.id,
-          offset: 0,
+          offset: (currentPage -1)*setting.TableLimit,
           limit: setting.TableLimit,
           includeTotal: true
       }).then(function(){
         var maxPage = util.calculatePage(setting.TableLimit,userStore.UserStoreInstance.getTotalByRoleId(self.state.selected.id));
-        self.setState({tableSetting:{currentPage:1,maxPage:maxPage}});
+        self.setState({tableSetting:{currentPage:currentPage,maxPage:maxPage}});
       });
     },
 
@@ -118,33 +118,11 @@ var RoleComposer = React.createClass({
     },
 
     handlePrevClick:function(){
-      var currentPage=this.state.tableSetting.currentPage;
-      var maxPage =this.state.tableSetting.maxPage;
-      if(currentPage > 1){
-        this.setState({tableSetting:{currentPage:currentPage-1,maxPage:maxPage}});
-        action.userGetList({
-            query: "",
-            roleId: this.state.selected.id,
-            offset: (currentPage-2)*setting.TableLimit,
-            limit: setting.TableLimit,
-            includeTotal: true
-        });
-      }
+      this.search(this.state.tableSetting.currentPage - 1,this.prevSearchText);
     },
 
     handleNextClick:function(){
-      var currentPage=this.state.tableSetting.currentPage;
-      var maxPage =this.state.tableSetting.maxPage;
-      if(currentPage < maxPage){
-        this.setState({tableSetting:{currentPage:currentPage+1,maxPage:maxPage}});
-        action.userGetList({
-            query: "",
-            roleId: this.state.selected.id,
-            offset: currentPage*setting.TableLimit,
-            limit: setting.TableLimit,
-            includeTotal: true
-        });
-      }
+      this.search(this.state.tableSetting.currentPage + 1,this.prevSearchText);
     },
 
     render: function () {
