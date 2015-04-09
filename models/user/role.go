@@ -1,7 +1,7 @@
 package user
 
 type Role struct {
-	Id           int64         `json:"id" orm:"column(id);pk;auto"`
+	Id           int64         `json:"id,string" orm:"column(id);pk;auto"`
 	Name         string        `json:"name" orm:"column(name)"  valid:"Required;Match(/^\\S*$/)"`
 	IsSystemRole bool          `json:"isSystemRole" orm:"column(is_system_role)"`
 	Description  string        `json:"description" orm:"column(description)"`

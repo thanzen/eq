@@ -9,6 +9,7 @@ import (
 	"github.com/thanzen/eq/conf/permissions"
 	"github.com/thanzen/eq/controllers/base"
 	"github.com/thanzen/eq/models/user"
+	"strconv"
 )
 
 type AdminApiController struct {
@@ -17,7 +18,7 @@ type AdminApiController struct {
 
 type UserFuzzSearchParam struct{
 	Query string `json:"query"`
-	RoleId int64 `json:"roleId"`
+	RoleId string `json:"roleId"`
 	Offset int64 `json:"offset"`
 	Limit int64 `json:"limit"`
 	IncludeTotal bool `json:"includeTotal"`
@@ -33,18 +34,21 @@ func (this *AdminApiController) GetUsers() {
 	var param UserFuzzSearchParam
 	json.Unmarshal(this.Ctx.Input.RequestBody, &param)
 	var err error
+	var roleId int64
 	beego.Info(param)
-	if err != nil || param.RoleId < 0 {
+	roleId ,err= strconv.ParseInt(param.RoleId,10,64)
+	beego.Info(param.RoleId)
+	if err != nil || roleId < 0 {
 		this.Ctx.Abort(500, "invalid role id")
 	}
-	if err != nil || param.Offset < 0 {
+	if  param.Offset < 0 {
 		this.Ctx.Abort(500, "invalid offset")
 	}
-	if err != nil || param.Limit < 0 {
+	if  param.Limit < 0 {
 		this.Ctx.Abort(500, "invalid limit")
 	}
 	var users []*user.User
-	n,_ := this.UserService.FuzzySearch(&users, param.Query, param.RoleId, param.Offset, param.Limit,param.IncludeTotal)
+	n,_ := this.UserService.FuzzySearch(&users, param.Query, roleId, param.Offset, param.Limit,param.IncludeTotal)
 	resp := UserFuzzSearchResponse{Users:users,Total:n}
 	this.Data["json"] = resp
 	this.ServeJson(true)
