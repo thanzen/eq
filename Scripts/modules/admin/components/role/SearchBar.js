@@ -2,6 +2,7 @@ var React = require('react/addons');
 var classNames = require("classnames");
 var Input = require("react-bootstrap/lib/Input");
 var Button = require("react-bootstrap/lib/Button");
+var Col = require('react-bootstrap/lib/Col');
 
 var SearchBar = React.createClass({
     getInitialState: function () {
@@ -23,19 +24,23 @@ var SearchBar = React.createClass({
     render: function () {
         return (
             <div>
-                <Input
-                    type='text'
-                    value={this.state.value}
-                    placeholder='Enter text'
-                    label=''
-                    help=''
-                    hasFeedback
-                    ref='input'
-                    groupClassName='group-class'
-                    wrapperClassName='wrapper-class'
-                    labelClassName='label-class'
-                    onChange={this.handleChange}/>
-                <Button onClick={this.handleClick}>Search</Button>
+                <Col md={4}>
+                    <Input
+                        type='text'
+                        value={this.state.value}
+                        placeholder='Enter text'
+                        label=''
+                        help=''
+                        hasFeedback
+                        ref='input'
+                        groupClassName='group-class'
+                        wrapperClassName='wrapper-class'
+                        labelClassName='label-class'
+                        onChange={this.handleChange}/>
+                </Col>
+                <Col md={2}>
+                    <Button onClick={this.handleClick}>Search</Button>
+                </Col>
             </div>);
     }
 });
