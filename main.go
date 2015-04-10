@@ -26,7 +26,8 @@ func main() {
 	}
 	beego.Info(beego.AppName, setting.APP_VER, setting.AppUrl)
 	if !setting.IsProMode {
-		beego.SetStaticPath("/static_source", "static_source")
+
+		beego.SetStaticPath("/static", "static")
 		beego.DirectoryIndex = true
 	}
 	orm.RegisterDriver("postgres", orm.DR_Postgres)

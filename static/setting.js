@@ -1,0 +1,1 @@
+exports.TableLimit = 20;

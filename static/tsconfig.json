@@ -1,0 +1,44 @@
+{
+    "version": "1.4.1",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./dispatcher.ts",
+        "./events/events.ts",
+        "./libs/definitions/bluebird.d.ts",
+        "./libs/definitions/flux.d.ts",
+        "./libs/definitions/jquery.d.ts",
+        "./libs/definitions/react/react-addons-global.d.ts",
+        "./libs/definitions/react/react-addons.d.ts",
+        "./libs/definitions/react/react-bootstrap.d.ts",
+        "./libs/definitions/react/react-bootstrap/Button.d.ts",
+        "./libs/definitions/react/react-bootstrap/ListGroup.d.ts",
+        "./libs/definitions/react/react-bootstrap/ListGroupItem.d.ts",
+        "./libs/definitions/react/react-bootstrap/Modal.d.ts",
+        "./libs/definitions/react/react-bootstrap/ModalTrigger.d.ts",
+        "./libs/definitions/react/react-bootstrap/all.d.ts",
+        "./libs/definitions/react/react-global.d.ts",
+        "./libs/definitions/react/react-jsx.d.ts",
+        "./libs/definitions/react/react.d.ts",
+        "./libs/util.ts",
+        "./modules/admin/actions/adminActions.ts",
+        "./modules/admin/eventType.ts",
+        "./modules/admin/models/permission.ts",
+        "./modules/admin/models/role.ts",
+        "./modules/admin/models/user.ts",
+        "./modules/admin/services/admin.ts",
+        "./modules/admin/stores/roleStore.ts",
+        "./modules/admin/stores/userStore.ts",
+        "./setting.ts"
+    ]
+}
