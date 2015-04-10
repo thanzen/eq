@@ -23,4 +23,7 @@ func RegisterRoutes() {
 
 	user := new(UserController)
 	beego.Router("/user/:username", user, "get:Index")
+
+	admin := new(AdminController)
+	beego.Router("/admin", admin, "get:Index")
 }
