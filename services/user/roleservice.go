@@ -59,7 +59,7 @@ func (this RoleService) GetAllRoles() (roles map[int64]*user.Role) {
 	temp, hit := cachemanager.GetWithExpireTime(ROLE_ALL_KEY, 604800, func(params ...interface{}) interface{} {
 		var allRoles []*user.Role
 		o := orm.NewOrm()
-		_, err := o.QueryTable("Role").All(&allRoles)
+		_, err := o.QueryTable("Role").OrderBy("Name").All(&allRoles)
 		if err == nil {
 			roles = make(map[int64]*user.Role)
 			for _, r := range allRoles {

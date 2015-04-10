@@ -336,7 +336,7 @@ func (this *UserService) FuzzySearch(users *[]*user.User, text string, roleId in
 	condition +=" OR UPPER(cell_phone) LIKE UPPER(?) OR UPPER(office_phone) LIKE UPPER(?)  OR UPPER(company) LIKE UPPER(?)"
 	sql = sql + condition
 	countSql = countSql + condition
-    sql += " ORDER BY id DESC OFFSET ? LIMIT ?"
+    sql += " ORDER BY user_name asc OFFSET ? LIMIT ?"
     text = "%"+text+"%"
 	var list []orm.ParamsList
 	db := orm.NewOrm()

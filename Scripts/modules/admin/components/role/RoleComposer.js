@@ -132,7 +132,7 @@ var RoleComposer = React.createClass({
         var roles = this.state.roles.map(this.getRoleItem);
         return (
             <Grid>
-                <Row className='show-grid'>
+                <Row>
                     <Col md={4}>
                         <ListGroup>
                             {roles}
@@ -142,10 +142,10 @@ var RoleComposer = React.createClass({
                     <Col md={8}>
                         <TabbedArea defaultActiveKey={1}>
                             <TabPane eventKey={1} tab='Users'>
-                                <Row className='show-grid'>
+                                <Row >
                                     <SearchBar onClick={this.handleSearchClick}/>
                                 </Row>
-                                <Row className='show-grid'>
+                                <Row>
                                     <UserTable users={this.state.users}
                                                currentPage={this.state.tableSetting.currentPage}
                                                maxPage={this.state.tableSetting.maxPage}
@@ -153,17 +153,13 @@ var RoleComposer = React.createClass({
                                     <RoleForm/>
                                 </Row>
                             </TabPane>
-
                             <TabPane eventKey={2} tab='Permissions'>TabPane 2 content</TabPane>
                         </TabbedArea>
-
                     </Col>
                 </Row>
-
             </Grid>
         );
     }
-
 });
 
 module.exports = RoleComposer;
