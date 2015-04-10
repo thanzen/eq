@@ -24,9 +24,4 @@ func RegisterControllers() {
 	//register user related controllers
 	user.RegisterRoutes()
 	userApi.RegisterRoutes()
-
-
-	//temporary for dev
-    beego.SetStaticPath("/dev","static")
-    beego.SetStaticPath("/test","Scripts")
 }
