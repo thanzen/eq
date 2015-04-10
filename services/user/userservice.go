@@ -299,7 +299,7 @@ func (this *UserService) LoadRoles(u *user.User) error {
 
 // HasPermission checks whether the user has the given permission
 func (this *UserService) HasPermission(u *user.User, permission string) bool {
-	if u == nil {
+	if u == nil || u.Id <=0 {
 		return false
 	}
 	err := this.LoadRoles(u)

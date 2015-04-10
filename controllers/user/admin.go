@@ -2,6 +2,7 @@ package user
 
 import (
     "github.com/thanzen/eq/controllers/base"
+    "github.com/thanzen/eq/conf/permissions"
 )
 
 type AdminController struct {
@@ -9,5 +10,6 @@ type AdminController struct {
 }
 
 func (this *AdminController) Index()  {
+    this.CheckPermission(permissions.RoleViewAll)
     this.TplNames = "admin/index.html"
 }

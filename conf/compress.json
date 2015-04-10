@@ -1,8 +1,8 @@
 {
     "Js": {
-        "SrcPath": "static_source/js",
+        "SrcPath": "static/js",
         "DistPath": "static/js",
-        "SrcURL": "static_source/js",
+        "SrcURL": "static/js",
         "DistURL": "static/js",
         "Groups": {
             "lib": {
@@ -37,9 +37,9 @@
         }
     },
     "Css": {
-        "SrcPath": "static_source/css",
+        "SrcPath": "static/css",
         "DistPath": "static/css",
-        "SrcURL": "static_source/css",
+        "SrcURL": "static/css",
         "DistURL": "static/css",
         "Groups": {
             "lib": {
