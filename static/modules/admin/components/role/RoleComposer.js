@@ -76,7 +76,7 @@ var RoleComposer = React.createClass({
 
     onRoleStoreChange: function () {
 
-        this.setState({roleStore: prepareAllRoles()});
+        this.setState({roles: prepareAllRoles()});
     },
 
     onUserStoreChange: function () {
