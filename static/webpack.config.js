@@ -7,7 +7,7 @@ module.exports = {
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js', '.ts']
   },
-  devtool: "#inline-source-map", // Jup, sourcemaps
+  // devtool: "#inline-source-map", // Jup, sourcemaps
   module: {
     loaders: [{
       test: /\.js$/,
