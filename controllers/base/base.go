@@ -535,11 +535,6 @@ func (this *BaseController) CheckPermission(permissions ...string)  {
     if beego.RunMode =="dev" || len(permissions) == 0 {
         return
     }
-
-	if this.User.Id <= 0{
-		this.FlashRedirect("/login", 302, "not logged in")
-		return
-	}
     for _,p:= range permissions {
         if !this.UserService.HasPermission(&this.User, p) {
             this.Ctx.Abort(401, "not authorized!")
