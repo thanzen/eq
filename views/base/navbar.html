@@ -14,7 +14,7 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>
-                <li><a target="_blank" href="http://beego.me">{{i18n .Lang "beego_website"}}</a></li>
+                <li><a target="_blank" href="https://github.com/thanzen">About</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-menu">
                 {{if .IsLogin}}
@@ -51,12 +51,7 @@
                             <span class="pull-right"><a href="{{$.AppUrl}}forgot"><i class="icon-question-sign"></i> {{i18n .Lang "auth.forgot_password"}}</a></span>
                         </p>
                         <button class="btn btn-primary btn-block" type="submit" value="Submit"> {{i18n .Lang "auth.login"}}</button>
-                        <div class="auth-socials">
-                            <a href="{{.AppUrl}}login/google" class="icon-google-plus google"></a>
-                            <a href="{{.AppUrl}}login/github" class="icon-github github"></a>
-                            <!-- <a href="{{.AppUrl}}login/weibo" class="icon-weibo weibo"></a> -->
-                            <!-- <a href="{{.AppUrl}}login/qq" class="icon-qq-round qq"></a> -->
-                        </div>
+                        
                     </form>
                 </li>
                 <li {{if .IsRegister}}class="active"{{end}}><a href="{{.AppUrl}}register">{{i18n .Lang "auth.register"}}</a></li>
