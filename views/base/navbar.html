@@ -15,6 +15,9 @@
             <ul class="nav navbar-nav">
                 <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>
                 <li><a target="_blank" href="https://github.com/thanzen">About</a></li>
+                {{if .User.IsSystemAccount}}
+                    <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
+                {{end}}
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-menu">
                 {{if .IsLogin}}
