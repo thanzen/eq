@@ -1,4 +1,6 @@
-﻿var ChatApp = require("./modules/admin/components/role/RoleComposer");
+ require("./css/bootstrap/css/bootstrap.css");
+ require("./css/base.css")﻿
+ var ChatApp = require("./modules/admin/components/role/RoleComposer");
 var setting = require("./setting");
 var action = require("./modules/admin/actions/adminActions");
 var React = require('react');
