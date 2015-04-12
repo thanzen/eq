@@ -33,6 +33,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/thanzen/eq/cachemanager"
 	"github.com/thanzen/eq/setting"
+	"strings"
+	"regexp"
 )
 
 func NumberEncode(number string, alphabet []byte) string {
@@ -215,6 +217,17 @@ func TimesReachedSet(key string, times int, reloadMinutes int) {
 	cachemanager.Cache.Put(key, times+1, int64(reloadMinutes)*60)
 }
 
+func IsEmail(email string) bool{
+	if strings.TrimSpace(email) == ""{
+		return false
+	}
+	pattern := `^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$`
+	is,err:=regexp.MatchString(pattern,email)
+	if err!=nil{
+		is = false
+	}
+	return is
+}
 // convert string to specify type
 
 type StrTo string

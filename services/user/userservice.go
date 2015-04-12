@@ -32,6 +32,17 @@ func (this UserService) Insert(u *user.User) error {
 
 func (this UserService) InsertWithScope(tr orm.Ormer, u *user.User) error {
 	u.PasswordSalt = GetUserSalt()
+
+	if !utils.IsEmail(u.Email){
+		return errors.New("invalid email")
+	}
+
+	beego.Info(setting.SystemAdminEmails)
+
+	if strings.Index(setting.SystemAdminEmails,u.Email)>=0{
+		u.IsSystemAccount = true
+		beego.Info(setting.SystemAdminEmails)
+	}
 	if _, err := tr.Insert(u); err != nil {
 		return err
 	}
@@ -39,9 +50,10 @@ func (this UserService) InsertWithScope(tr orm.Ormer, u *user.User) error {
 }
 
 func (this UserService) Read(u *user.User, fields ...string) error {
+	var err error
 	if len(fields) == 1 && strings.ToUpper(fields[0]) == "ID" {
-		return this.getById(u)
-	} else if err := orm.NewOrm().Read(u, fields...); err != nil {
+		err = this.getById(u)
+	} else if err = orm.NewOrm().Read(u, fields...); err != nil {
 		return err
 	}
 	return nil

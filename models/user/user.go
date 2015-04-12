@@ -29,7 +29,7 @@ type User struct {
 	Company          string    `json:"company" orm:"company"`
 	UserType         *UserType `json:"-" orm:"rel(fk);column(user_type_id);default(1)"`
 	Roles            []*Role   `json:"-" orm:"rel(m2m);rel_table(user_role);on_delete(cascade)"`
-	IsSystemAccount  bool      `json:"-" orm:"-"`
+	IsSystemAccount  bool      `json:"-" orm:"column(is_system_account);`
 }
 
 func (u *User) TableName() string {

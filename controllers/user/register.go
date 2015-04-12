@@ -81,8 +81,6 @@ func (this *RegisterController) Active() {
 	code := this.GetString(":code")
 
 	var user user.User
-	beego.Info("begin to active")
-	beego.Info(code)
 	if this.UserService.VerifyUserActiveCode(&user, code) {
 		user.Active = true
 		user.PasswordSalt = userServ.GetUserSalt()

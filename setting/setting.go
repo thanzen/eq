@@ -84,6 +84,9 @@ var (
 	//robot.txt
 	RobotUas      string
 	RobotDisallow string
+
+	//system admin emails
+	SystemAdminEmails string
 )
 
 func Initialize() {
@@ -182,7 +185,7 @@ func loadConfig() {
 	if len(SecretKey) == 0 {
 		fmt.Println("Please set your secret_key in app.conf file")
 	}
-
+	SystemAdminEmails = beego.AppConfig.DefaultString("system_admin_emails","than@linkedtec.com")
 }
 
 func settingLocales() {
