@@ -1,6 +1,6 @@
- require("./css/bootstrap/css/bootstrap.css");
- require("./css/base.css")﻿
- var ChatApp = require("./modules/admin/components/role/RoleComposer");
+require("./css/bootstrap/css/bootstrap.css");
+require("./css/base.css")﻿
+var RoleComposer = require("./modules/admin/components/role/RoleComposer");
 var setting = require("./setting");
 var action = require("./modules/admin/actions/adminActions");
 var React = require('react');
@@ -13,7 +13,7 @@ Promise.props({
   users:action.userGetList({query:"",roleId:"0",offset:0,limit:setting.TableLimit,includeTotal:true})
 }).then(function(result){
   React.render(
-      <ChatApp />,
+      <RoleComposer/>,
       document.getElementById('react')
   );
 });
